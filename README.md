@@ -1,5 +1,55 @@
 # README
 
+## Database Schema
+
+### users  
+
+| Column Name | Data Type |
+| :--- | :--- |
+| `id` | `integer` | 
+| `name` | `string` | 
+| `email` | `string` | 
+| `password` | `string` | 
+| `role` | `integer` | 
+| `created_at` | `datetime` | 
+| `updated_at` | `datetime` |           
+
+
+### tasks    
+
+| Column Name | Data Type |
+| :--- | :--- |
+| `id` | `integer` | 
+| `user_id` | `integer` | 
+| `title` | `string` | 
+| `content` | `text` | 
+| `start_time` | `datetime` | 
+| `end_time` | `datetime` | 
+| `priority` | `integer` | 
+| `status` | `integer` | 
+| `created_at` | `datetime` | 
+| `updated_at` | `datetime` | 
+
+### task_tags  
+
+| Column Name | Data Type |
+| :--- | :--- |
+| `id` | `integer` | 
+| `task_id` | `integer` | 
+| `tag_id` | `integer` | 
+
+
+### tags    
+
+| Column Name | Data Type |
+| :--- | :--- |
+| `id` | `integer` | 
+| `name` | `string` | 
+| `created_at` | `datetime` | 
+| `updated_at` | `datetime` | 
+
+---  
+edit it later ....  
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
