@@ -52,6 +52,11 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  gem 'rspec-rails'       # RSpec 測試框架
+  gem 'factory_bot_rails' # 測試資料製造廠
+  gem 'faker'             # 假資料原料
+
 end
 
 group :development do
@@ -64,3 +69,4 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
