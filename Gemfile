@@ -56,6 +56,7 @@ group :development, :test do
   gem 'rspec-rails'       # RSpec 測試框架
   gem 'factory_bot_rails' # 測試資料製造廠
   gem 'faker'             # 假資料原料
+  gem 'tailwindcss-rails'
 
 end
 

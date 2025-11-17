@@ -1,8 +1,9 @@
+@import "tailwind";
 /*
 所有flash-message"共同"樣式
  */
 
- 
+/*
 .flash-message {
   box-sizing: border-box;
   width: 254px;
@@ -14,14 +15,14 @@
   display: flex;
   align-items: center; 
   justify-content: center; 
-  position: fixed; /*固定在瀏覽器上方，不會佔排版的空間，製造浮起來的效果*/
+  position: fixed; 固定在瀏覽器上方，不會佔排版的空間，製造浮起來的效果
   top: 20px;   
-  right: 20px; /*top right 讓flash 固定在右上 */
-  z-index: 1000; /*物件圖層*/
+  right: 20px; top right 讓flash 固定在右上 
+  z-index: 1000; 物件圖層
 }
 
 
-/* 共同flash裡的 span 標籤 */
+共同flash裡的 span 標籤 
 .flash-message span {
   font-family: 'Inter', sans-serif;
   font-style: normal;
@@ -45,3 +46,5 @@
 .flash-alert span {
   color: #D9534F;
 }
+
+*/

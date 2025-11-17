@@ -25,39 +25,39 @@
 
 <body>
 
-<% if flash[:notice] %>
-    <div class="flash-message flash-succeed js-flash-message">
-      <span><%= flash[:notice] %></span>
+  <% if flash[:notice] %>
+    <div class="js-flash-message flex items-center justify-center fixed top-5 right-5 z-50 w-64 h-16 px-5 bg-gray-50 border rounded-lg border-green-500">
+      <span class="font-sans font-normal text-base leading-relaxed text-green-500">
+        <%= flash[:notice] %>
+      </span>
     </div>
   <% end %>
 
   <% if flash[:alert] %>
-    <div class="flash-message flash-alert js-flash-message">
-      <span><%= flash[:alert] %></span>
+    <div class="js-flash-message flex items-center justify-center fixed top-5 right-5 z-50 w-64 h-16 px-5 bg-gray-50 border rounded-lg border-red-500">
+      <span class="font-sans font-normal text-base leading-relaxed text-red-500">
+        <%= flash[:alert] %>
+      </span>
     </div>
   <% end %>
-  <%= yield %> <script type="text/javascript">
-  // turbo:load 事件每一次 Turbo 換頁時都會觸發。
-  document.addEventListener("turbo:load", function() {
-    
-    const flashMessages = document.querySelectorAll(".js-flash-message");
 
-    // 跑一個迴圈，讓所有 flash 都能套用
-    flashMessages.forEach(function(flashMessage) {
-      
-      setTimeout(function() {
-        flashMessage.style.transition = "opacity 0.5s ease-out";
-        flashMessage.style.opacity = 0;
-        
-        // 等淡出效果播完，再把它從畫面上移除
-        setTimeout(function() {
-          flashMessage.remove();
-        }, 500); 
-      }, 3000); 
+  <%= yield %>
+
+  <script type="text/javascript">
+    document.addEventListener("turbo:load", function() {
+      const flashMessages = document.querySelectorAll(".js-flash-message");
+      flashMessages.forEach(function(flashMessage) {
+        setTimeout(function() { 
+          flashMessage.style.transition = "opacity 0.5s ease-out";
+          flashMessage.style.opacity = 0;
+          setTimeout(function() {
+            flashMessage.remove();
+          }, 500);
+        }, 3000); 
+      });
     });
-  });
-</script>
+  </script>
 
-</body> 
+</body>
 </html>
 
