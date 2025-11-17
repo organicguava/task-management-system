@@ -1,10 +1,47 @@
 /*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
+所有flash-message"共同"樣式
  */
+
+ 
+.flash-message {
+  box-sizing: border-box;
+  width: 254px;
+  height: 63px;
+  padding: 0 20px;
+  background: #F9FAFB;
+  border: 1px solid; 
+  border-radius: 8px;
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+  position: fixed; /*固定在瀏覽器上方，不會佔排版的空間，製造浮起來的效果*/
+  top: 20px;   
+  right: 20px; /*top right 讓flash 固定在右上 */
+  z-index: 1000; /*物件圖層*/
+}
+
+
+/* 共同flash裡的 span 標籤 */
+.flash-message span {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+}
+
+
+.flash-succeed {
+  border-color: #34C759;
+}
+.flash-succeed span {
+  color: #34C759;
+}
+
+
+.flash-alert {
+  border-color: #D9534F; 
+}
+.flash-alert span {
+  color: #D9534F;
+}
