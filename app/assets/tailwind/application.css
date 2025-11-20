@@ -1,1 +1,32 @@
 @import "tailwindcss";
+
+@layer components {
+  /* Flash Message 容器 */
+  .flash-message {
+
+    @apply flex items-center fixed top-5 right-5 z-50;
+    @apply w-auto min-w-[250px] h-16 px-6 bg-white border border-gray-200 rounded-lg shadow-lg;
+    @apply opacity-100; 
+  }
+
+  /* 文字樣式 */
+  .flash-message-text {
+    @apply font-sans text-gray-700 text-base font-medium;
+  }
+
+  /* 成功狀態 (綠色邊框與文字) */
+  .flash-success {
+    @apply border-green-500;
+  }
+  .flash-success .flash-message-text {
+    @apply text-green-600;
+  }
+
+  /* 警告狀態 (紅色邊框與文字) */
+  .flash-alert {
+    @apply border-red-500;
+  }
+  .flash-alert .flash-message-text {
+    @apply text-red-600;
+  }
+}

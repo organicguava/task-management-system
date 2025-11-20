@@ -4,60 +4,42 @@
     <title><%= content_for(:title) || "Task Management System" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Task Management System">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%# 這裡引入主要的 CSS 與 JS %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-<body>
+  <body>
 
-  <% if flash[:notice] %>
-    <div class="js-flash-message flex items-center justify-center fixed top-5 right-5 z-50 w-64 h-16 px-5 bg-gray-50 border rounded-lg border-green-500">
-      <span class="font-sans font-normal text-base leading-relaxed text-green-500">
-        <%= flash[:notice] %>
-      </span>
-    </div>
-  <% end %>
 
-  <% if flash[:alert] %>
-    <div class="js-flash-message flex items-center justify-center fixed top-5 right-5 z-50 w-64 h-16 px-5 bg-gray-50 border rounded-lg border-red-500">
-      <span class="font-sans font-normal text-base leading-relaxed text-red-500">
-        <%= flash[:alert] %>
-      </span>
-    </div>
-  <% end %>
+    
+    <% if flash[:notice] %>
+      <div data-controller="flash" class="flash-message flash-success">
+        <span class="flash-message-text">
+          <%= flash[:notice] %>
+        </span>
+      </div>
+    <% end %>
 
-  <%= yield %>
+    <% if flash[:alert] %>
+      <div data-controller="flash" class="flash-message flash-alert">
+        <span class="flash-message-text">
+          <%= flash[:alert] %>
+        </span>
+      </div>
+    <% end %>
 
-  <script type="text/javascript">
-    document.addEventListener("turbo:load", function() {
-      const flashMessages = document.querySelectorAll(".js-flash-message");
-      flashMessages.forEach(function(flashMessage) {
-        setTimeout(function() { 
-          flashMessage.style.transition = "opacity 0.5s ease-out";
-          flashMessage.style.opacity = 0;
-          setTimeout(function() {
-            flashMessage.remove();
-          }, 500);
-        }, 3000); 
-      });
-    });
-  </script>
+    <%= yield %>
 
-</body>
+  </body>
 </html>
-
