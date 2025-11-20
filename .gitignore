@@ -33,3 +33,7 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+.DS_Store
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

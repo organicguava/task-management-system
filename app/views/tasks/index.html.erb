@@ -1,0 +1,23 @@
+<h1>任務列表</h1>
+<table>
+  <thead>
+    <tr>
+      <td>title</td>
+      <td>content</td>
+    </tr>
+  </thead>
+  
+  <tbody>
+  
+    <% @tasks.each do |task| %>
+    <tr>
+      <td><%= task.title %></td>
+      <td><%= task.content %></td>
+    
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+
