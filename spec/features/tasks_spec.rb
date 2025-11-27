@@ -21,10 +21,10 @@ RSpec.feature "Tasks", type: :feature do
   end
 
 
+  # 當visit edit_task_path(task) 時，會先建立資料
+  let(:task) { FactoryBot.create(:task) }
 
   scenario "修改任務" do
-  # 因為測edit 所以先建立資料
-    task = FactoryBot.create(:task)
     
     visit edit_task_path(task) 
     
@@ -37,24 +37,33 @@ RSpec.feature "Tasks", type: :feature do
 
   end
 
-  scenario "刪除任務" do
-    #因為測delete所以先建立資料
-    task = FactoryBot.create(:task, title: '要被刪掉的任務')
-    
-    visit tasks_path 
-    
-    #確保刪除前看得到它
-    expect(page).to have_content '要被刪掉的任務'
-    
-    # 4. Act: 按下刪除 (注意：Rails 7 預設刪除通常是按鈕而非連結)
-    # 如果你的刪除是連結，改用 click_link '刪除'
-    click_link '刪除' 
+  context "當任務存在時 (測試刪除功能)" do
+      # 1. Setup 寫在 context (群組) 層級
+      let!(:task) { FactoryBot.create(:task, title: '要被刪掉的任務') }
+      before { visit tasks_path }
 
-    expect(page).to have_content '資料已刪除' 
-    
-    #驗證該任務文字「不」存在於頁面上
-    expect(page).not_to have_content '要被刪掉的任務'
-end
+      # 2. 範例 A: 驗證資料存在
+      it "列表頁應顯示該任務" do
+        expect(page).to have_content '要被刪掉的任務'
+      end
+
+      # 3. 範例 B: 測試點擊刪除
+      context "當點擊刪除連結時" do
+        before { click_link '刪除' } # 假設你的按鈕文字是 '刪除'
+
+        it "應顯示成功訊息" do
+          expect(page).to have_content '資料已刪除' # 確保 Flash 訊息正確
+        end
+
+        it "列表頁應不再顯示該任務" do
+          expect(page).not_to have_content '要被刪掉的任務'
+        end
+      end
+
+
+  end
+
+
 
 
 end
