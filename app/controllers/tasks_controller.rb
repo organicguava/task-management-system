@@ -41,10 +41,9 @@ end
 
 def destroy
   @task = Task.find(params[:id]) # 如果找不到 id，Rails 會自動跳 404，這行以下都不會執行
-  @task.destroy 
+  @task.destroy
   flash[:notice] = "資料已刪除"
   redirect_to tasks_path, status: :see_other # 必須回傳 HTTP 303 (See Other) 狀態碼，否則 Turbo 有時候會報錯。
-  
 end
 
 private # 為了安全性，必須使用 Strong Parameters
@@ -52,5 +51,4 @@ private # 為了安全性，必須使用 Strong Parameters
 def task_params
   params.require(:task).permit(:title, :content)
 end
-
 end

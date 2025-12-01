@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby '3.4.7'
+ruby "3.4.7"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.1.1"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
@@ -53,11 +53,10 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", "~> 1.1", require: false
 
-  gem 'rspec-rails', '~> 8.0'       # RSpec 測試框架
-  gem 'factory_bot_rails', '~> 6.5' # 測試資料製造廠
-  gem 'faker', '~> 3.5'             # 假資料原料
-  gem 'tailwindcss-rails', '~> 4.4'
-
+  gem "rspec-rails", "~> 8.0"       # RSpec 測試框架
+  gem "factory_bot_rails", "~> 6.5" # 測試資料製造廠
+  gem "faker", "~> 3.5"             # 假資料原料
+  gem "tailwindcss-rails", "~> 4.4"
 end
 
 group :development do
@@ -70,4 +69,3 @@ group :test do
   gem "capybara", "~> 3.40"
   gem "selenium-webdriver", "~> 4.38"
 end
-

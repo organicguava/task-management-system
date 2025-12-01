@@ -1,0 +1,91 @@
+name: Rails RSpec CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+
+# 將所有「非敏感設定」集中到 workflow 層級的 env
+env:
+  RUBY_VERSION: ${{ vars.RUBY_VERSION || '3.4.7' }} #  || 'default_value'是一種防呆機制，若action上沒填版本，預設用此
+  POSTGRES_VERSION: ${{ vars.POSTGRES_VERSION || '15' }}
+  POSTGRES_DB_TEST: ${{ vars.POSTGRES_DB_TEST || 'task_management_system_test' }}
+  PG_HOST: '127.0.0.1' # CI 特定的 host，保留在檔案中即可
+  RAILS_ENV: 'test'
+
+jobs:
+  test:
+    name: Run RSpec Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        
+        #直接存取 vars     
+        image: postgres:${{ vars.POSTGRES_VERSION || '15' }}
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          
+          #直接存取 vars 
+          POSTGRES_DB: ${{ vars.POSTGRES_DB_TEST || 'task_management_system_test' }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+
+          #  使用 Variables 
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true  
+
+      - name: Set up database
+        env:
+
+          #  使用 Secrets
+          PG_USER: ${{ secrets.POSTGRES_USER }}
+          PG_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          #覆蓋 database.yml 的所有設定，強迫應用程式走網路連線。
+          DATABASE_URL: postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB_TEST }}
+        run: |
+          bin/rails db:prepare
+
+      - name: Run RSpec
+        env:
+
+          # 使用 Secrets 
+          PG_USER: ${{ secrets.POSTGRES_USER }}
+          PG_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          #覆蓋 database.yml 的所有設定，強迫應用程式走網路連線。
+          DATABASE_URL: postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB_TEST }}
+        run: |
+          bundle exec rspec
+
+#rubocop 風格檢查的任務（會和同一個jobs裡的test同時執行）
+  lint:
+    name: RuboCop Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+
+      - name: Run RuboCop
+        run: bundle exec rubocop
