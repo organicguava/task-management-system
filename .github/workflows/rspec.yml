@@ -57,6 +57,8 @@ jobs:
           #  使用 Secrets
           PG_USER: ${{ secrets.POSTGRES_USER }}
           PG_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          #覆蓋 database.yml 的所有設定，強迫應用程式走網路連線。
+          DATABASE_URL: postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB_TEST }}
         run: |
           bin/rails db:prepare
 
@@ -66,5 +68,7 @@ jobs:
           # 使用 Secrets 
           PG_USER: ${{ secrets.POSTGRES_USER }}
           PG_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          #覆蓋 database.yml 的所有設定，強迫應用程式走網路連線。
+          DATABASE_URL: postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB_TEST }}
         run: |
           bundle exec rspec
