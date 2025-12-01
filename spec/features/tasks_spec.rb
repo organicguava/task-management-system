@@ -3,13 +3,13 @@ require 'rails_helper'
 RSpec.feature "Tasks", type: :feature do
   # 測試情境：建立任務
   scenario "建立一個新任務" do
-    # 1. 前往新增任務頁面 
-    visit new_task_path #check point:check path name consistency
+    # 1. 前往新增任務頁面
+    visit new_task_path # check point:check path name consistency
 
-    save_and_open_page #視覺化capybara測試時看到的東西
+    save_and_open_page # 視覺化capybara測試時看到的東西
 
     # 2. 填寫表單 (fill_in '標籤上的文字' or 'name屬性', with: '輸入值')
-    fill_in 'Title', with: '買醬油' 
+    fill_in 'Title', with: '買醬油'
     fill_in 'Content', with: '要去全聯買'
 
     # 3. 送出表單 (按鈕上的文字)
@@ -25,16 +25,14 @@ RSpec.feature "Tasks", type: :feature do
   let(:task) { FactoryBot.create(:task) }
 
   scenario "修改任務" do
-    
-    visit edit_task_path(task) 
-    
-    fill_in 'Title', with: '買醬油 (改)' 
-    
-    click_button '更新任務' 
+    visit edit_task_path(task)
 
-    expect(page).to have_content '任務更新成功' 
+    fill_in 'Title', with: '買醬油 (改)'
+
+    click_button '更新任務'
+
+    expect(page).to have_content '任務更新成功'
     expect(page).to have_content '買醬油 (改)'
-
   end
 
   context "當任務存在時 (測試刪除功能)" do
@@ -59,11 +57,5 @@ RSpec.feature "Tasks", type: :feature do
           expect(page).not_to have_content '要被刪掉的任務'
         end
       end
-
-
   end
-
-
-
-
 end
