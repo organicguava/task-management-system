@@ -8,8 +8,8 @@ RSpec.feature "Tasks", type: :feature do
 
     save_and_open_page # 視覺化capybara測試時看到的東西
 
-    # 2. 填寫表單 
-    # - fill_in '標籤上的文字' or 'name屬性', 
+    # 2. 填寫表單
+    # - fill_in '標籤上的文字' or 'name屬性',
     # - Task.human_attribute_name,可以應付i18n,Rails 會自己去 zh-TW.yml 查 :title 對應的翻譯是什麼
     # - with: '輸入值'
     fill_in Task.human_attribute_name(:title), with: '買醬油'
@@ -30,7 +30,7 @@ RSpec.feature "Tasks", type: :feature do
   scenario "修改任務" do
     visit edit_task_path(task)
 
-    fill_in Task.human_attribute_name(:title),with: '買醬油 (改)'
+    fill_in Task.human_attribute_name(:title), with: '買醬油 (改)'
 
     click_button '更新任務'
 
