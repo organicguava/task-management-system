@@ -1,4 +1,4 @@
-<h1>新增任務</h1>
+<h1><%= t('tasks.new.title') %></h1>
 
 <%= form_with model: @task do |form| %>
   <div>
@@ -10,6 +10,6 @@
     <%= form.text_area :content %>
   </div>
   <div>
-    <%= form.submit "提交" %>
+    <%= form.submit t('tasks.new.submit') %>
   </div>
 <% end %>

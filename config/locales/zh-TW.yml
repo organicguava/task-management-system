@@ -1,0 +1,50 @@
+zh-TW:
+  # 1. 針對 Model 與欄位的翻譯 (ActiveRecord)
+  # 這樣寫的好處是：使用 f.label :title 時，Rails 會自動抓這裡的翻譯，不用在 view 裡寫中文
+  activerecord:
+    models:
+      task: "任務"
+    attributes:
+      task:
+        title: "標題"
+        content: "內容"
+        # status: "狀態"
+        # priority: "優先級"
+        updated_at: "更新時間"
+        created_at: "建立時間"
+  
+  # 2. 針對 View 或 Controller 的自訂翻譯
+  tasks:
+    index:
+      header: "任務列表"
+      title: "標題"
+      content: "內容"
+      actions: "操作"
+      create_button: "新增任務"
+    new:
+      title: "新增任務"
+      submit: "提交"
+    edit:
+      title: "編輯任務"
+      submit: "更新任務"
+    form:
+      submit: "提交"
+      update: "更新任務"
+      back: "返回列表"
+      
+  # 3. Flash 訊息 (Controller 用)
+  flash:
+    tasks:
+      create:
+        notice: "任務已成功建立"
+      update:
+        notice: "任務更新成功"
+      destroy:
+        notice: "資料已刪除"
+        
+  # 4. 共用動作 (如果很多地方都用得到)
+  action:
+    edit: "修改"
+    delete: "刪除"
+    show: "查看"
+    confirm_delete: "確定要刪除任務「%{title}」嗎？"

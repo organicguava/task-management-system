@@ -11,7 +11,7 @@ def create # 用來接收post(送)請求的
   @task = Task.new(task_params)
 
   if @task.save
-    flash[:notice] = "任務已成功建立"
+    flash[:notice] = t('flash.tasks.create.notice')
     redirect_to tasks_path # 成功後轉跳回列表頁
   else
     render :new # 失敗時，留在 new 頁面 (會顯示錯誤訊息)
@@ -29,12 +29,12 @@ def update
   # 2. 嘗試更新 (使用 Strong Parameters)
   if @task.update(task_params)
     # 成功：設定 Flash 訊息並轉跳回列表
-    flash[:notice] = "任務更新成功"
+    flash[:notice] = t('flash.tasks.update.notice')
     redirect_to tasks_path
   else
     # 失敗：回到編輯頁面 (render :edit)
     # 此時 @task 包含著使用者剛剛輸入的資料 + 錯誤訊息
-    flash.now[:alert] = "更新失敗"
+    flash.now[:alert] = t('flash.tasks.update.alert')
     render :edit
   end
 end
@@ -42,7 +42,7 @@ end
 def destroy
   @task = Task.find(params[:id]) # 如果找不到 id，Rails 會自動跳 404，這行以下都不會執行
   @task.destroy
-  flash[:notice] = "資料已刪除"
+  flash[:notice] = t('flash.tasks.destroy.notice')
   redirect_to tasks_path, status: :see_other # 必須回傳 HTTP 303 (See Other) 狀態碼，否則 Turbo 有時候會報錯。
 end
 

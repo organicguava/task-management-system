@@ -9,8 +9,8 @@ RSpec.feature "Tasks", type: :feature do
     save_and_open_page # 視覺化capybara測試時看到的東西
 
     # 2. 填寫表單 (fill_in '標籤上的文字' or 'name屬性', with: '輸入值')
-    fill_in 'Title', with: '買醬油'
-    fill_in 'Content', with: '要去全聯買'
+    fill_in '標題', with: '買醬油'
+    fill_in '內容', with: '要去全聯買'
 
     # 3. 送出表單 (按鈕上的文字)
     click_button '提交'
@@ -27,7 +27,7 @@ RSpec.feature "Tasks", type: :feature do
   scenario "修改任務" do
     visit edit_task_path(task)
 
-    fill_in 'Title', with: '買醬油 (改)'
+    fill_in '標題', with: '買醬油 (改)'
 
     click_button '更新任務'
 
