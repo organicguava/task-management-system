@@ -15,6 +15,9 @@ module TaskManagementSystem
     # config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
     # 當zh-TW檔變大，要拆分成多個時，可以寫上面那行
 
+    # 設定時區為台北 (GMT+8)
+    config.time_zone = "Taipei"
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
