@@ -11,6 +11,10 @@ module TaskManagementSystem
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
 
+    config.i18n.default_locale = :"zh-TW"
+    # config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
+    # 當zh-TW檔變大，要拆分成多個時，可以寫上面那行
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
