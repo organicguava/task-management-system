@@ -1,6 +1,6 @@
 class TasksController < ApplicationController
 def index
-    @tasks = Task.all # @ 之後可以被 View 檔案使用
+    @tasks = Task.order(created_at: :desc) # @ 之後可以被 View 檔案使用,且列表資料按建立時間，降冪排列
 end
 
 def new

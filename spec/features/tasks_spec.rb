@@ -23,7 +23,7 @@ RSpec.feature "Tasks", type: :feature do
     expect(page).to have_content '任務已成功建立' # #check point:flash content consistency
   end
 
-
+  # 測試情境：修改任務
   # 當visit edit_task_path(task) 時，會先建立資料
   let(:task) { FactoryBot.create(:task) }
 
@@ -50,7 +50,11 @@ RSpec.feature "Tasks", type: :feature do
 
       # 3. 範例 B: 測試點擊刪除
       context "當點擊刪除連結時" do
-        before { click_link '刪除' } # 假設你的按鈕文字是 '刪除'
+        before do
+          within find('tr', text: task.title) do # 限定該任務的刪除(不然一個頁面中會有好幾筆""刪除"連結)
+            click_link I18n.t('action.delete') # 在 before 中需用 I18n.t() 而非 t()
+          end
+        end
 
         it "應顯示成功訊息" do
           expect(page).to have_content '資料已刪除' # 確保 Flash 訊息正確
@@ -60,5 +64,21 @@ RSpec.feature "Tasks", type: :feature do
           expect(page).not_to have_content '要被刪掉的任務'
         end
       end
+  end
+
+  # 測試情境：列表頁面排序
+  # 用let! 讓資料在進入範例前就建立好
+  let!(:old_task) { create(:task, title: "舊的任務", created_at: 1.day.ago) }
+  let!(:new_task) { create(:task, title: "新的任務", created_at: Time.zone.now) }
+
+  describe "列表頁面排序" do
+    context "當使用者進入任務列表頁時" do
+      before { visit tasks_path }
+
+      scenario "任務應該依照建立時間倒序排列（新的在上面）" do
+        # 表示先找到"新任務"，後面接著要在任何地方找到"舊任務"
+        expect(page.body).to match(/#{new_task.title}.*#{old_task.title}/m)
+      end
+    end
   end
 end
