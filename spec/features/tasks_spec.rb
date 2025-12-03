@@ -72,7 +72,7 @@ RSpec.feature "Tasks", type: :feature do
   let!(:new_task) { create(:task, title: "新的任務", created_at: Time.zone.now) }
 
   describe "列表頁面排序" do
-    context "當使用者進入任務列表頁時" do
+    context "進入任務列表頁時" do
       before { visit tasks_path }
 
       scenario "任務應該依照建立時間倒序排列（新的在上面）" do
