@@ -9,12 +9,12 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_in_production
 
   private
-  
+
   def authenticate_in_production
     if Rails.env.production?
       authenticate_or_request_with_http_basic do |username, password|
         # 建議使用環境變數
-        username == ENV.fetch("ADMIN_USERNAME", "admin") && 
+        username == ENV.fetch("ADMIN_USERNAME", "admin") &&
         password == ENV.fetch("ADMIN_PASSWORD", "123456")
       end
     end
