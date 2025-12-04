@@ -14,7 +14,9 @@ def create # 用來接收post(送)請求的
     flash[:notice] = t("flash.tasks.create.notice")
     redirect_to tasks_path # 成功後轉跳回列表頁
   else
-    render :new # 失敗時，留在 new 頁面 (會顯示錯誤訊息)
+    # 驗證失敗時，重新渲染 new 頁面（停留在表單）
+    flash.now[:alert] = t("flash.tasks.create.alert")
+    render :new, status: :unprocessable_entity
   end
 end
 
@@ -32,10 +34,9 @@ def update
     flash[:notice] = t("flash.tasks.update.notice")
     redirect_to tasks_path
   else
-    # 失敗：回到編輯頁面 (render :edit)
-    # 此時 @task 包含著使用者剛剛輸入的資料 + 錯誤訊息
+    # 驗證失敗時停留在 edit 頁面並顯示錯誤訊息
     flash.now[:alert] = t("flash.tasks.update.alert")
-    render :edit
+    render :edit, status: :unprocessable_entity
   end
 end
 

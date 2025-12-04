@@ -1,0 +1,18 @@
+
+<%= form_with model: @task do |form| %>
+  <div>
+    <%= form.label :title %><br>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.label :content %><br>
+    <%= form.text_area :content %>
+  </div>
+
+  <div>
+    <%# 判斷 form 的物件是否為新紀錄(new or edit)；補充：form.object指的是這個表單綁定的物件（也就是 @task） %>
+    <% button_text = form.object.new_record? ? t('tasks.form.submit') : t('tasks.form.update') %>
+    <%= form.submit button_text %>
+  </div>
+<% end %>

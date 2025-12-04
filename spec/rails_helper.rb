@@ -2,6 +2,14 @@
 require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
+
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end
+
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 # Uncomment the line below in case you have `--require rails_helper` in the `.rspec` file
@@ -37,10 +45,13 @@ end
 RSpec.configure do |config|
   # 讓 RSpec 認識 FactoryBot 的語法
   config.include FactoryBot::Syntax::Methods
+  # 讓 feature spec 可以使用 t() helper
+  config.include ActionView::Helpers::TranslationHelper
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
     Rails.root.join('spec/fixtures')
   ]
+
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
