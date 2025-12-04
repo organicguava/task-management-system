@@ -1,0 +1,26 @@
+databases:
+  - name: task_manager_db
+    databaseName: task_manager_production
+    user: task_manager
+    plan: free # 使用免費方案
+
+services:
+  - type: web
+    name: task-manager
+    runtime: docker # Rails 8 建議使用 Docker 模式
+    plan: free # 使用免費方案
+    region: singapore # 建議選新加坡，離台灣近
+    envVars:
+      - key: RAILS_MASTER_KEY
+        sync: false # 這個值不要寫在檔案裡，要在 Render 後台設定
+      - key: DATABASE_URL
+        fromDatabase:
+          name: task_manager_db
+          property: connectionString
+      - key: WEB_CONCURRENCY
+        value: 2 # 根據免費機器的效能設定
+        
+      - key: ADMIN_USERNAME
+        sync: false # 將帳號密碼也改成不公開同步，保護敏感資料，會在render後台設定
+      - key: ADMIN_PASSWORD
+        sync: false 

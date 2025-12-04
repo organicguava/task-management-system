@@ -49,6 +49,14 @@
 | `updated_at` | `datetime` | 
 
 ---  
+
+## 網站連結與測試帳號 
+- 網址：(待補齊)
+- Basic Auth 帳號：admin123 
+- Basic Auth 密碼：666666
+
+---  
+
 edit it later ....  
 This README would normally document whatever steps are necessary to get the
 application up and running.
