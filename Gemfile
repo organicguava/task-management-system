@@ -71,4 +71,5 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara", "~> 3.40"
   gem "selenium-webdriver", "~> 4.38"
+  gem "shoulda-matchers", "~> 6.0"
 end

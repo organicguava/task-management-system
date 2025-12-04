@@ -37,8 +37,10 @@ zh-TW:
     tasks:
       create:
         notice: "任務已成功建立"
+        alert: "標題不可為空"
       update:
         notice: "任務更新成功"
+        alert: "標題不可為空"
       destroy:
         notice: "資料已刪除"
         

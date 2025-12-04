@@ -32,7 +32,7 @@ RSpec.feature "Tasks", type: :feature do
 
     fill_in Task.human_attribute_name(:title), with: '買醬油 (改)'
 
-    click_button '更新任務'
+    click_button t('tasks.form.update')
 
     expect(page).to have_content '任務更新成功'
     expect(page).to have_content '買醬油 (改)'
@@ -52,7 +52,7 @@ RSpec.feature "Tasks", type: :feature do
       context "當點擊刪除連結時" do
         before do
           within find('tr', text: task.title) do # 限定該任務的刪除(不然一個頁面中會有好幾筆""刪除"連結)
-            click_link I18n.t('action.delete') # 在 before 中需用 I18n.t() 而非 t()
+            click_link t('action.delete') # 統一使用 t() helper
           end
         end
 
@@ -72,7 +72,7 @@ RSpec.feature "Tasks", type: :feature do
   let!(:new_task) { create(:task, title: "新的任務", created_at: Time.zone.now) }
 
   describe "列表頁面排序" do
-    context "當使用者進入任務列表頁時" do
+    context "進入任務列表頁時" do
       before { visit tasks_path }
 
       scenario "任務應該依照建立時間倒序排列（新的在上面）" do
