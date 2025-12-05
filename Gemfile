@@ -43,6 +43,8 @@ gem "image_processing", "~> 1.14"
 # i18n
 gem "rails-i18n", "~> 8.0"
 
+gem "tailwindcss-rails", "~> 4.4"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -59,7 +61,7 @@ group :development, :test do
   gem "rspec-rails", "~> 8.0"       # RSpec 測試框架
   gem "factory_bot_rails", "~> 6.5" # 測試資料製造廠
   gem "faker", "~> 3.5"             # 假資料原料
-  gem "tailwindcss-rails", "~> 4.4"
+  
 end
 
 group :development do
