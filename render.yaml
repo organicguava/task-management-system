@@ -3,6 +3,7 @@ databases:
     databaseName: task_manager_production
     user: task_manager
     plan: free # 使用免費方案
+    region: singapore # 預設會把它開在美國奧勒岡 (Oregon), 要與 web 服務同區域建議改成新加坡
 
 services:
   - type: web
