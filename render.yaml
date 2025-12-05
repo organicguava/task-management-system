@@ -25,3 +25,6 @@ services:
         sync: false # 將帳號密碼也改成不公開同步，保護敏感資料，會在render後台設定
       - key: ADMIN_PASSWORD
         sync: false 
+        # 讓render自動設定靜態檔案服務(例如圖片、CSS、JS)，沒加上這行網站不會有樣式
+      - key: RAILS_SERVE_STATIC_FILES
+        value: true

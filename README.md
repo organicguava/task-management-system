@@ -51,7 +51,7 @@
 ---  
 
 ## 網站連結與測試帳號 
-- 網址：(待補齊)
+- 網址：(https://task-manager-v0pr.onrender.com)
 - Basic Auth 帳號：admin123 
 - Basic Auth 密碼：666666
 
