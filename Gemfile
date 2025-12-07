@@ -61,7 +61,6 @@ group :development, :test do
   gem "rspec-rails", "~> 8.0"       # RSpec 測試框架
   gem "factory_bot_rails", "~> 6.5" # 測試資料製造廠
   gem "faker", "~> 3.5"             # 假資料原料
-  
 end
 
 group :development do
