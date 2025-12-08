@@ -10,6 +10,11 @@
     <%= form.text_area :content %>
   </div>
 
+  <div class="mb-4">
+    <%= form.label :end_time, class: "block text-gray-700 font-bold mb-2" %><br>
+    <%= form.datetime_field :end_time, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+  </div>
+
   <div>
     <%# 判斷 form 的物件是否為新紀錄(new or edit)；補充：form.object指的是這個表單綁定的物件（也就是 @task） %>
     <% button_text = form.object.new_record? ? t('tasks.form.submit') : t('tasks.form.update') %>

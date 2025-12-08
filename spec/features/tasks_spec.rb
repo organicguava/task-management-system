@@ -81,4 +81,25 @@ RSpec.feature "Tasks", type: :feature do
       end
     end
   end
+
+  describe "列表頁面排序" do
+      # 建立測試資料
+      let!(:task_early) { create(:task, title: "早結束的任務", end_time: 1.day.from_now) }
+      let!(:task_late) { create(:task, title: "晚結束的任務", end_time: 3.days.from_now) }
+
+      before { visit tasks_path }
+
+    scenario "點擊結束時間排序，應為降冪排列" do
+      # 點開下拉選單 (因為連結藏在裡面，不點開 Capybara 看不到)
+      find('summary', text: '排序方式').click
+
+      # 等選單打開後，再點擊「結束時間」連結(因為頁面中有兩個end_time，要限定在下拉選單內點)
+      within 'details' do
+        click_link Task.human_attribute_name(:end_time)
+      end
+
+      # 驗證結果
+      expect(page.body.index(task_late.title)).to be < page.body.index(task_early.title)
+      end
+    end
 end

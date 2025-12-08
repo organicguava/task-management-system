@@ -8,9 +8,7 @@ zh-TW:
       task:
         title: "標題"
         content: "內容"
-        # status: "狀態"
-        # priority: "優先級"
-        updated_at: "更新時間"
+        end_time: "結束時間"
         created_at: "建立時間"
   
   # 2. 針對 View 或 Controller 的自訂翻譯
