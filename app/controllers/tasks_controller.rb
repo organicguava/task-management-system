@@ -1,6 +1,6 @@
 class TasksController < ApplicationController
 def index
-    @tasks = Task.order(created_at: :desc) # @ 之後可以被 View 檔案使用,且列表資料按建立時間，降冪排列
+  @tasks = Task.controller_index_query(params[:sort_by], params[:direction]) # 使用 task.rb (model) 裡封裝好的filter排序邏輯
 end
 
 def new
@@ -50,6 +50,6 @@ end
 private # 為了安全性，必須使用 Strong Parameters
 
 def task_params
-  params.require(:task).permit(:title, :content)
+  params.require(:task).permit(:title, :content, :end_time)
 end
 end
