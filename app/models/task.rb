@@ -1,6 +1,7 @@
 class Task < ApplicationRecord
   # 驗證標題必填
   validates :title, presence: true
+  validates :status, presence: true
 
   # 針對 TasksController#index 的查詢邏輯做封裝(原本寫在tasks_controller.rb裡面)
   scope :controller_index_query, ->(sort_by, direction) {
@@ -18,5 +19,23 @@ class Task < ApplicationRecord
 
     # 3. 執行查詢 (PostgreSQL 語法)
     order("#{safe_column} #{safe_direction} NULLS LAST")
+  }
+
+  # 定義status：待處理 (0), 進行中 (1), 完成 (2)
+  enum :status, { pending: 0, processing: 1, completed: 2 }
+
+  # 搜尋邏輯一樣放在model scope 而非controller , 維持fat controller thin model 原則
+
+  # 標題模糊搜尋
+  scope :search_by_title, ->(keyword) {
+    return if keyword.blank?
+    where("title LIKE ?", "%#{keyword}%")
+  }
+
+  # 狀態精確搜尋
+  scope :search_by_status, ->(status) {
+    return if status.blank? # Early exit guard clause before doing query
+    # 如果傳進來的字串是 'pending'，Rails enum 會自動幫我們轉成 0 去查 DB
+    where(status: status)
   }
 end
