@@ -1,5 +1,10 @@
 class AddStatusToTasks < ActiveRecord::Migration[8.1]
   def change
-    add_column :tasks, :status, :integer, default: 0, null: false # 加入 status 欄位，預設值為 0 (待處理)，且不可為 null
-  end
+      # 使用 change_table 搭配 bulk: true，讓 DB 一次做完所有事
+      change_table :tasks, bulk: true do |t|
+        t.integer :status, default: 0, null: false
+        t.index :status
+        t.index :title
+      end
+    end
 end
