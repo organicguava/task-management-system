@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.feature "Tasks", type: :feature do
   # --- 測試情境：建立任務 ---
-  
+
   scenario "任務能被成功建立" do
     visit new_task_path
 
@@ -12,7 +12,7 @@ RSpec.feature "Tasks", type: :feature do
     click_button I18n.t('tasks.form.submit')
 
     # 驗證
-    
+
     expect(page).to have_content '買醬油'
     expect(page).to have_content I18n.t('flash.tasks.create.notice')
   end
@@ -25,7 +25,7 @@ RSpec.feature "Tasks", type: :feature do
     fill_in Task.human_attribute_name(:title), with: '買醬油 (改)'
 
     click_button I18n.t('tasks.form.update')
-    
+
     expect(page).to have_content I18n.t('flash.tasks.update.notice')
     expect(page).to have_content '買醬油 (改)'
   end
@@ -36,7 +36,7 @@ RSpec.feature "Tasks", type: :feature do
 
     before { visit tasks_path }
 
-    
+
     it "該任務應顯示於列表頁" do
       expect(page).to have_content '要被刪掉的任務'
     end
@@ -68,7 +68,7 @@ RSpec.feature "Tasks", type: :feature do
         click_button I18n.t('common.search', default: '搜尋')
       end
 
-      
+
       it "符合關鍵字的任務應被顯示" do
         expect(page).to have_content "買牛奶"
       end
@@ -102,7 +102,7 @@ RSpec.feature "Tasks", type: :feature do
 
       before { visit tasks_path }
 
-      
+
       it "任務應依照建立時間倒序排列（新的在上面）" do
         expect(page.body).to match(/#{new_task.title}.*#{old_task.title}/m)
       end
