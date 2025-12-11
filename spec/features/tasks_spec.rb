@@ -1,105 +1,128 @@
 require 'rails_helper'
 
 RSpec.feature "Tasks", type: :feature do
-  # 測試情境：建立任務
-  scenario "建立一個新任務" do
-    # 1. 前往新增任務頁面
-    visit new_task_path # check point:check path name consistency
+  # --- 測試情境：建立任務 ---
 
-    save_and_open_page # 視覺化capybara測試時看到的東西
+  scenario "任務能被成功建立" do
+    visit new_task_path
 
-    # 2. 填寫表單
-    # - fill_in '標籤上的文字' or 'name屬性',
-    # - Task.human_attribute_name,可以應付i18n,Rails 會自己去 zh-TW.yml 查 :title 對應的翻譯是什麼
-    # - with: '輸入值'
     fill_in Task.human_attribute_name(:title), with: '買醬油'
     fill_in Task.human_attribute_name(:content), with: '要去全聯買'
 
-    # 3. 送出表單 (按鈕上的文字)
-    click_button '提交'
+    click_button I18n.t('tasks.form.submit')
 
-    # 4. 預期結果：畫面上應該要有剛剛輸入的標題，並且有 Flash 訊息
+    # 驗證
+
     expect(page).to have_content '買醬油'
-    expect(page).to have_content '任務已成功建立' # #check point:flash content consistency
+    expect(page).to have_content I18n.t('flash.tasks.create.notice')
   end
 
-  # 測試情境：修改任務
-  # 當visit edit_task_path(task) 時，會先建立資料
-  let(:task) { FactoryBot.create(:task) }
-
-  scenario "修改任務" do
+  # --- 測試情境：修改任務 ---
+  scenario "任務能被成功修改" do
+    task = create(:task)
     visit edit_task_path(task)
 
     fill_in Task.human_attribute_name(:title), with: '買醬油 (改)'
 
-    click_button t('tasks.form.update')
+    click_button I18n.t('tasks.form.update')
 
-    expect(page).to have_content '任務更新成功'
+    expect(page).to have_content I18n.t('flash.tasks.update.notice')
     expect(page).to have_content '買醬油 (改)'
   end
 
-  context "當任務存在時 (測試刪除功能)" do
-      # 1. Setup 寫在 context (群組) 層級
-      let!(:task) { FactoryBot.create(:task, title: '要被刪掉的任務') }
-      before { visit tasks_path }
+  # --- 測試情境：刪除任務 ---
+  context "當任務存在時" do
+    let!(:task) { create(:task, title: '要被刪掉的任務') }
 
-      # 2. 範例 A: 驗證資料存在
-      it "列表頁應顯示該任務" do
-        expect(page).to have_content '要被刪掉的任務'
-      end
+    before { visit tasks_path }
 
-      # 3. 範例 B: 測試點擊刪除
-      context "當點擊刪除連結時" do
-        before do
-          within find('tr', text: task.title) do # 限定該任務的刪除(不然一個頁面中會有好幾筆""刪除"連結)
-            click_link t('action.delete') # 統一使用 t() helper
-          end
-        end
 
-        it "應顯示成功訊息" do
-          expect(page).to have_content '資料已刪除' # 確保 Flash 訊息正確
-        end
+    it "該任務應顯示於列表頁" do
+      expect(page).to have_content '要被刪掉的任務'
+    end
 
-        it "列表頁應不再顯示該任務" do
-          expect(page).not_to have_content '要被刪掉的任務'
+    context "點擊刪除按鈕後" do
+      before do
+        within find('tr', text: task.title) do
+          click_link I18n.t('action.delete')
         end
       end
-  end
 
-  # 測試情境：列表頁面排序
-  # 用let! 讓資料在進入範例前就建立好
-  let!(:old_task) { create(:task, title: "舊的任務", created_at: 1.day.ago) }
-  let!(:new_task) { create(:task, title: "新的任務", created_at: Time.zone.now) }
-
-  describe "列表頁面排序" do
-    context "進入任務列表頁時" do
-      before { visit tasks_path }
-
-      scenario "任務應該依照建立時間倒序排列（新的在上面）" do
-        # 表示先找到"新任務"，後面接著要在任何地方找到"舊任務"
-        expect(page.body).to match(/#{new_task.title}.*#{old_task.title}/m)
+      it "該任務應從列表頁消失" do
+        expect(page).to have_content I18n.t('flash.tasks.destroy.notice')
+        expect(page).not_to have_content '要被刪掉的任務'
       end
     end
   end
 
+  # --- 測試情境：搜尋與過濾 ---
+  describe "搜尋與過濾功能" do
+    let!(:task_pending) { create(:task, title: "買牛奶", status: :pending) }
+    let!(:task_completed) { create(:task, title: "寫作業", status: :completed) }
+
+    before { visit tasks_path }
+
+    context "進行標題搜尋時" do
+      before do
+        fill_in Task.human_attribute_name(:title), with: "牛奶"
+        click_button I18n.t('common.search', default: '搜尋')
+      end
+
+
+      it "符合關鍵字的任務應被顯示" do
+        expect(page).to have_content "買牛奶"
+      end
+
+      it "不符合關鍵字的任務不應被顯示" do
+        expect(page).not_to have_content "寫作業"
+      end
+    end
+
+    context "進行狀態篩選時" do
+      before do
+        select I18n.t('activerecord.enums.task.status.pending'), from: Task.human_attribute_name(:status)
+        click_button I18n.t('common.search', default: '搜尋')
+      end
+
+      it "該狀態的任務應被顯示" do
+        expect(page).to have_content "買牛奶"
+      end
+
+      it "其他狀態的任務不應被顯示" do
+        expect(page).not_to have_content "寫作業"
+      end
+    end
+  end
+
+  # --- 測試情境：列表頁面排序 ---
   describe "列表頁面排序" do
-      # 建立測試資料
+    context "預設排序 (建立時間)" do
+      let!(:old_task) { create(:task, title: "舊的任務", created_at: 1.day.ago) }
+      let!(:new_task) { create(:task, title: "新的任務", created_at: Time.zone.now) }
+
+      before { visit tasks_path }
+
+
+      it "任務應依照建立時間倒序排列（新的在上面）" do
+        expect(page.body).to match(/#{new_task.title}.*#{old_task.title}/m)
+      end
+    end
+
+    context "點擊結束時間排序時" do
       let!(:task_early) { create(:task, title: "早結束的任務", end_time: 1.day.from_now) }
       let!(:task_late) { create(:task, title: "晚結束的任務", end_time: 3.days.from_now) }
 
       before { visit tasks_path }
 
-    scenario "點擊結束時間排序，應為降冪排列" do
-      # 點開下拉選單 (因為連結藏在裡面，不點開 Capybara 看不到)
-      find('summary', text: '排序方式').click
+      it "任務應依照結束時間降冪排列" do
+        find('summary', text: '排序方式').click
 
-      # 等選單打開後，再點擊「結束時間」連結(因為頁面中有兩個end_time，要限定在下拉選單內點)
-      within 'details' do
-        click_link Task.human_attribute_name(:end_time)
-      end
+        within 'details' do
+          click_link Task.human_attribute_name(:end_time)
+        end
 
-      # 驗證結果
-      expect(page.body.index(task_late.title)).to be < page.body.index(task_early.title)
+        expect(page.body.index(task_late.title)).to be < page.body.index(task_early.title)
       end
     end
+  end
 end
