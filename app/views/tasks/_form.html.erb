@@ -1,5 +1,5 @@
 
-<%= form_with model: @task do |form| %>
+<%= form_with model: @task, builder: TailwindFormBuilder do |form| %>
   <div>
     <span class="text-red-500 mr-1">*</span><%= form.label :title %><br>
     <%= form.text_field :title %>
@@ -20,7 +20,7 @@
        <span class="text-red-500 mr-1">*</span><%= Task.human_attribute_name(:status) %>
     <% end %>
     
-    <%= tailwind_select(form, :status, Task.statuses.keys.map { |k| [t("activerecord.enums.task.status.#{k}"), k] }) %>
+    <%= form.tailwind_select :status, Task.statuses.keys.map { |k| [t("activerecord.enums.task.status.#{k}"), k] } %>
   </div>
 
   <div class="mb-4">
@@ -28,7 +28,7 @@
       <span class="text-red-500 mr-1">*</span><%= Task.human_attribute_name(:priority) %>
     <% end %>
 
-    <%= tailwind_select(form, :priority, Task.priorities.keys.map { |k| [t("activerecord.enums.task.priority.#{k}"), k] }) %>
+    <%= form.tailwind_select :priority, Task.priorities.keys.map { |k| [t("activerecord.enums.task.priority.#{k}"), k] } %>
   </div>
 
   <div>
