@@ -11,12 +11,17 @@ zh-TW:
         end_time: "結束時間"
         created_at: "建立時間"
         status: "狀態"
+        priority: "優先級"
     enums: 
       task:
         status:
           pending: "待處理"
           processing: "進行中"
           completed: "已完成"
+        priority:
+          low: "低"
+          medium: "中"
+          high: "高"
   
   # 2. 針對 View 或 Controller 的自訂翻譯
   tasks:
