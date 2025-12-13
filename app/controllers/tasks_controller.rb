@@ -7,6 +7,7 @@ class TasksController < ApplicationController
     @tasks = Task.all
                   .search_by_title(params[:q])      # 搜尋標題
                   .search_by_status(params[:status]) # 搜尋狀態
+                  .search_by_priority(params[:priority]) # 搜尋優先順序
                   .controller_index_query(params[:sort_by], params[:direction]) # filter 排序
     # 注意！直到 View 讀取 @tasks 時才會發送一次 SQL
   end
@@ -61,6 +62,6 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:title, :content, :end_time, :status)
+    params.require(:task).permit(:title, :content, :end_time, :status, :priority)
   end
 end

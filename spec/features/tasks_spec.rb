@@ -58,7 +58,8 @@ RSpec.feature "Tasks", type: :feature do
   # --- 測試情境：搜尋與過濾 ---
   describe "搜尋與過濾功能" do
     let!(:task_pending) { create(:task, title: "買牛奶", status: :pending) }
-    let!(:task_completed) { create(:task, title: "寫作業", status: :completed) }
+    let!(:task_completed) { create(:task, title: "寫作業", status: :completed, priority: :high) }
+    let!(:task_medium) { create(:task, title: "中度優先級工作", status: :pending, priority: :medium) }
 
     before { visit tasks_path }
 
@@ -122,6 +123,32 @@ RSpec.feature "Tasks", type: :feature do
         end
 
         expect(page.body.index(task_late.title)).to be < page.body.index(task_early.title)
+      end
+    end
+
+    context "依優先順序篩選時" do
+      let!(:task_low) { create(:task, title: "低優先任務") }
+      let!(:task_high) { create(:task, title: "高優先任務", priority: :high) }
+      let!(:task_medium) { create(:task, title: "中度優先級工作", priority: :medium) }
+
+      before { visit tasks_path }
+
+      it "選擇某優先順序後僅顯示該優先順序的任務" do
+        # 展開排序/篩選元件
+        find('summary', text: '排序方式').click
+
+        # 直接以欄位的 name/id 進行選擇，避免受限於容器
+        if page.has_selector?('select[name="priority"]')
+          select I18n.t('activerecord.enums.task.priority.low'), from: 'priority'
+        else
+          select I18n.t('activerecord.enums.task.priority.low'), from: Task.human_attribute_name(:priority)
+        end
+
+        click_button I18n.t('common.search', default: '搜尋')
+
+        expect(page).to have_content task_low.title
+        expect(page).not_to have_content task_high.title
+        expect(page).not_to have_content task_medium.title
       end
     end
   end
