@@ -10,6 +10,18 @@ class TasksController < ApplicationController
                   .search_by_priority(params[:priority]) # 搜尋優先順序
                   .controller_index_query(params[:sort_by], params[:direction]) # filter 排序
     # 注意！直到 View 讀取 @tasks 時才會發送一次 SQL
+
+    #  1. 篩選 (Filter) - 使用 Ransack, 且搜尋後的結果進行分頁
+    @q = Task.ransack(params[:q])
+
+    #  2. 排序 (Sort) - 使用你 Model 裡自定義的 scope
+    # @pagy 存放分頁資訊, @tasks 存放該頁的資料
+    # 接住 Ransack 篩選後的結果 (@q.result)，再串接 controller_index_query（"NULLS LAST" 以及 "白名單檢查" 邏輯）
+    sorted_tasks = @q.result.controller_index_query(params[:sort_by], params[:direction])
+
+    # 3. 分頁 (Pagination) - 使用 Pagy
+    # 最後將篩選並排序好的資料丟給 Pagy, 並在此直接設定每頁幾筆 (limit) 和溢位處理 (overflow)
+    @pagy, @tasks = pagy(sorted_tasks, limit: 10, overflow: :last_page)
   end
 
   def new

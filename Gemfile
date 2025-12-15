@@ -16,6 +16,8 @@ gem "turbo-rails", "~> 2.0"
 gem "stimulus-rails", "~> 1.3"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder", "~> 2.14"
+gem "pagy", "~> 9.3"
+gem "ransack", "~> 4.4"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
@@ -73,4 +75,6 @@ group :test do
   gem "capybara", "~> 3.40"
   gem "selenium-webdriver", "~> 4.38"
   gem "shoulda-matchers", "~> 6.0"
+
+  gem "database_cleaner-active_record", "~> 2.0" # 測試資料庫清理工具
 end

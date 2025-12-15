@@ -56,27 +56,26 @@ RSpec.configure do |config|
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
 
-  # You can uncomment this line to turn off ActiveRecord support entirely.
-  # config.use_active_record = false
+  # 設定 DatabaseCleaner (請將以下整段貼入 config 區塊內)
 
-  # RSpec Rails uses metadata to mix in different behaviours to your tests,
-  # for example enabling you to call `get` and `post` in request specs. e.g.:
-  #
-  #     RSpec.describe UsersController, type: :request do
-  #       # ...
-  #     end
-  #
-  # The different available types are documented in the features, such as in
-  # https://rspec.info/features/8-0/rspec-rails
-  #
-  # You can also this infer these behaviours automatically by location, e.g.
-  # /spec/models would pull in the same behaviour as `type: :model` but this
-  # behaviour is considered legacy and will be removed in a future version.
-  #
-  # To enable this behaviour uncomment the line below.
-  # config.infer_spec_type_from_file_location!
+  # 【設定 A】：在整個 RSpec 跑起來前，先做一次徹底的「截斷 (Truncation)」
+  # 解決 CI 髒資料 (之前測試殘留的) 的關鍵！它會把資料表清空重置。
+  config.before(:suite) do
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
+  # 【設定 B】：每一個 individual example (it) 執行前後，使用交易 (Transaction) 的方式來確保資料庫乾淨
+  config.around(:each) do |example|
+    # 設定策略為交易
+    DatabaseCleaner.strategy = :transaction
+
+    # cleaning 方法會自動執行 start (開始前) 和 clean (結束後)
+    DatabaseCleaner.cleaning do
+      example.run
+    end
+  end
 
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!

@@ -10,7 +10,16 @@ class Task < ApplicationRecord
   # 定義priority：低 (0), 中 (1), 高 (2), 預設為低 (0)
   enum :priority, { low: 0, medium: 1, high: 2 }
 
+  # 為了安全性（避免惡意使用者試探你的資料庫欄位），你必須在 Model 裡明確定義「哪些欄位可以被搜尋」
+  # 定義 Ransack 可以搜尋的欄位 (白名單)
+  def self.ransackable_attributes(auth_object = nil)
+    [ "title", "content", "status", "priority", "start_time", "end_time", "created_at" ]
+  end
 
+  # 定義 Ransack 可以搜尋的關聯 (如果之後有 User 或 Tag 的話)
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
 
   # 搜尋邏輯放在model scope 而非controller , 維持fat controller thin model 原則
 

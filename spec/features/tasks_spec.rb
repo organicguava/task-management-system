@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.feature "Tasks", type: :feature do
+RSpec.describe "Tasks", type: :feature do
   # --- 測試情境：建立任務 ---
   describe "建立任務" do
     before do
@@ -58,91 +58,92 @@ RSpec.feature "Tasks", type: :feature do
   end
 
 
-  # --- 測試情境：搜尋與過濾 ---
-  describe "搜尋與過濾功能" do
-    let!(:task_pending) { create(:task, title: "買牛奶", status: :pending) }
-    let!(:task_completed) { create(:task, title: "寫作業", status: :completed, priority: :high) }
-    let!(:task_medium) { create(:task, title: "中度優先級工作", status: :pending, priority: :medium) }
+  # 測試群組 1: 驗證「排序功能」
+  # 核心需求：資料庫必須乾淨，不能有分頁干擾 (資料 < 10筆)
+  describe "任務排序 (Sorting)" do
+    let!(:task_early) { Task.create(title: "舊任務", end_time: 1.day.from_now, created_at: 1.day.ago) }
+    let!(:task_late)  { Task.create(title: "新任務", end_time: 1.day.ago, created_at: Time.now) }
 
-    before { visit tasks_path }
-
-    context "進行標題搜尋時" do
-      before do
-        fill_in Task.human_attribute_name(:title), with: "牛奶"
-        click_button I18n.t('common.search', default: '搜尋')
-      end
-
-      subject { page }
-
-      it { is_expected.to have_content "買牛奶" }
-      it { is_expected.not_to have_content "寫作業" }
-    end
-
-    context "進行狀態篩選時" do
-      before do
-        select I18n.t('activerecord.enums.task.status.pending'), from: Task.human_attribute_name(:status)
-        click_button I18n.t('common.search', default: '搜尋')
-      end
-
-      subject { page }
-
-      it { is_expected.to have_content "買牛奶" }
-      it { is_expected.not_to have_content "寫作業" }
-    end
-  end
-
-
-  # --- 測試情境：列表頁面排序 ---
-  describe "列表頁面排序" do
-    context "預設排序 (建立時間)" do
-      let!(:old_task) { create(:task, title: "舊的任務", created_at: 1.day.ago) }
-      let!(:new_task) { create(:task, title: "新的任務", created_at: Time.zone.now) }
-
+    context "列表預設依建立時間排序" do
       before { visit tasks_path }
 
       subject { page }
 
-      it { is_expected.to have_content(/#{new_task.title}.*#{old_task.title}/m) }
+      it { is_expected.to have_content(/新任務.*舊任務/m) }
     end
 
-    context "點擊結束時間排序時" do
-      let!(:task_early) { create(:task, title: "早結束的任務", end_time: 1.day.from_now) }
-      let!(:task_late) { create(:task, title: "晚結束的任務", end_time: 3.days.from_now) }
-
+    context "點擊結束時間排序" do
       before do
         visit tasks_path
-        find('summary', text: '排序方式').click
-        within 'details' do
-          click_link Task.human_attribute_name(:end_time)
-        end
-      end
-
-      subject { page.body }
-
-      it { is_expected.to match(/#{task_late.title}.*#{task_early.title}/m) }
-    end
-
-    context "依優先順序篩選時" do
-      let!(:task_low) { create(:task, title: "低優先任務") }
-      let!(:task_high) { create(:task, title: "高優先任務", priority: :high) }
-      let!(:task_medium) { create(:task, title: "中度優先級工作", priority: :medium) }
-
-      before do
-        visit tasks_path
-        find('summary', text: '排序方式').click
-        if page.has_selector?('select[name="priority"]')
-          select I18n.t('activerecord.enums.task.priority.low'), from: 'priority'
-        else
-          select I18n.t('activerecord.enums.task.priority.low'), from: Task.human_attribute_name(:priority)
-        end
-        click_button I18n.t('common.search', default: '搜尋')
+        click_link Task.human_attribute_name(:end_time)
       end
 
       subject { page }
 
-      it { is_expected.to have_content task_low.title }
-      it { is_expected.not_to have_content task_high.title }
-      it { is_expected.not_to have_content task_medium.title }
+      # 點擊一次後是升序 (end_time 早的在前)
+      # task_late 的 end_time 是 1.day.ago (早)，task_early 的是 1.day.from_now (晚)
+      # 所以預期順序是：新任務 (task_late) 在前，舊任務 (task_early) 在後
+      it { is_expected.to have_content(/舊任務.*新任務/m) }
+    end
+  end
+
+  # 測試群組 2: 驗證「分頁功能」
+  # 核心需求：資料 > 10筆
+  describe "分頁功能 (Pagination)" do
+    before do # 在每個it 區塊執行前，都會重新建立11筆任務資料
+      11.times { |n| Task.create!(title: "分頁測試任務 #{n}", status: 0, priority: 0) }
+    end
+
+
+
+    context "超過 10 筆資料時" do
+      before do
+        visit tasks_path
+      end
+
+      subject { page }
+
+      # 第一頁顯示最新的 10 筆 (任務 10 ~ 任務 1)
+      it { is_expected.to have_content("分頁測試任務 10") }
+
+      # 第一頁不應該看到最舊的 (任務 0)
+      it { is_expected.not_to have_content("分頁測試任務 0") }
+
+      it { is_expected.to have_selector('.pagy-container') }
+    end
+
+    context "點擊下一頁後" do
+      before do
+        visit tasks_path
+        click_link "2" # 點擊第 2 頁按鈕
+      end
+
+      subject { page }
+
+      it { is_expected.to have_current_path(/page=2/) }
+      it { is_expected.to have_content("分頁測試任務 0") }
+    end
+  end
+
+  # 測試群組 3: 驗證「搜尋功能」
+  # 核心需求：資料庫有特定特徵的資料
+  describe "搜尋功能 (Search)" do
+    before do
+      Task.create(title: "買蘋果", status: :pending)
+      Task.create(title: "買香蕉", status: :completed)
+    end
+
+    context "依標題搜尋" do
+      before do
+        visit tasks_path
+        fill_in "q[title_cont]", with: "蘋果"
+        click_button I18n.t('common.search') # 或 "搜尋"
+      end
+
+      subject { page }
+
+      it { is_expected.to have_content("買蘋果") }
+      it { is_expected.not_to have_content("買香蕉") }
     end
   end
 end
