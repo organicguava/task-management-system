@@ -61,11 +61,6 @@ RSpec.describe "Tasks", type: :feature do
   # 測試群組 1: 驗證「排序功能」
   # 核心需求：資料庫必須乾淨，不能有分頁干擾 (資料 < 10筆)
   describe "任務排序 (Sorting)" do
-    # 每次進來這個 context，先把所有任務刪光，確保是在第一頁
-    before do
-      Task.delete_all
-    end
-
     let!(:task_early) { Task.create(title: "舊任務", end_time: 1.day.from_now, created_at: 1.day.ago) }
     let!(:task_late)  { Task.create(title: "新任務", end_time: 1.day.ago, created_at: Time.now) }
 
@@ -95,16 +90,11 @@ RSpec.describe "Tasks", type: :feature do
   # 測試群組 2: 驗證「分頁功能」
   # 核心需求：資料 > 10筆
   describe "分頁功能 (Pagination)" do
-    before(:all) do
-      # 使用 before(:all) 避免每個 it 都重新清理和建立資料
-      # 在所有測試前清理一次，最後用 after(:all) 清理
-      Task.delete_all
+    before do # 在每個it 區塊執行前，都會重新建立11筆任務資料
       11.times { |n| Task.create!(title: "分頁測試任務 #{n}", status: 0, priority: 0) }
     end
 
-    after(:all) do
-      Task.delete_all
-    end
+
 
     context "超過 10 筆資料時" do
       before do
@@ -139,7 +129,6 @@ RSpec.describe "Tasks", type: :feature do
   # 核心需求：資料庫有特定特徵的資料
   describe "搜尋功能 (Search)" do
     before do
-      Task.delete_all
       Task.create(title: "買蘋果", status: :pending)
       Task.create(title: "買香蕉", status: :completed)
     end
