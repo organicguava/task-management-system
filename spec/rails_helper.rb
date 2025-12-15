@@ -72,11 +72,7 @@ RSpec.configure do |config|
     DatabaseCleaner.strategy = :transaction
   end
 
-  # 【設定 C】：如果是 JavaScript 驅動的測試 (js: true)，改用 Truncation
-  # 因為瀏覽器測試是另一個 Process，看不到 Transaction 內的資料，所以必須真的寫入再截斷
-  config.before(:each, js: true) do
-    DatabaseCleaner.strategy = :truncation
-  end
+
 
   # 【執行】：在每個測試開始與結束時，啟動與執行清理
   config.before(:each) do
