@@ -66,21 +66,15 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  # 【設定 B】：每個測試開始前，預設使用「交易 (Transaction)」策略
-  # 這是為了速度 (Transaction 比較快，像按復原鍵)
-  config.before(:each) do
+  # 【設定 B】：每一個 individual example (it) 執行前後，使用交易 (Transaction) 的方式來確保資料庫乾淨
+  config.around(:each) do |example|
+    # 設定策略為交易
     DatabaseCleaner.strategy = :transaction
-  end
 
-
-
-  # 【執行】：在每個測試開始與結束時，啟動與執行清理
-  config.before(:each) do
-    DatabaseCleaner.start
-  end
-
-  config.after(:each) do
-    DatabaseCleaner.clean
+    # cleaning 方法會自動執行 start (開始前) 和 clean (結束後)
+    DatabaseCleaner.cleaning do
+      example.run
+    end
   end
 
   # Filter lines from Rails gems in backtraces.
