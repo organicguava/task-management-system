@@ -76,5 +76,5 @@ group :test do
   gem "selenium-webdriver", "~> 4.38"
   gem "shoulda-matchers", "~> 6.0"
 
-  gem 'database_cleaner-active_record', "~> 2.0" # 測試資料庫清理工具
+  gem "database_cleaner-active_record", "~> 2.0" # 測試資料庫清理工具
 end

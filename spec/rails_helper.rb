@@ -59,7 +59,7 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = false
 
   # 設定 DatabaseCleaner (請將以下整段貼入 config 區塊內)
-  
+
   # 【設定 A】：在整個 RSpec 跑起來前，先做一次徹底的「截斷 (Truncation)」
   # 解決 CI 髒資料 (之前測試殘留的) 的關鍵！它會把資料表清空重置。
   config.before(:suite) do
