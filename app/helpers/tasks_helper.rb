@@ -1,6 +1,6 @@
 module TasksHelper
     # index page 排序的 filter link helper
-    def sort_link(column, title = nil, options = {})
+    def my_sort_link(column, title = nil, options = {})
         title ||= column.titleize # 如果沒有提供 title，就把欄位名稱美化後當作標題
 
         # hover到選單項目的預設樣式

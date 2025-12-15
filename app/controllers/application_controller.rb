@@ -8,6 +8,9 @@ class ApplicationController < ActionController::Base
   # 設定Basic Auth認證
   before_action :authenticate_in_production
 
+  # 引入 Pagy 後端功能
+  include Pagy::Backend
+
   private
 
   def authenticate_in_production
