@@ -2,6 +2,9 @@
 
 @layer components {
   /* Flash Message 容器 */
+  /*
+
+
   .flash-message {
 
     @apply flex items-center fixed top-5 right-5 z-50;
@@ -9,12 +12,12 @@
     @apply opacity-100; 
   }
 
-  /* 文字樣式 */
+  文字樣式 
   .flash-message-text {
     @apply font-sans text-gray-700 text-base font-medium;
   }
 
-  /* 成功狀態 (綠色邊框與文字) */
+  成功狀態 (綠色邊框與文字) 
   .flash-success {
     @apply border-green-500;
   }
@@ -22,11 +25,13 @@
     @apply text-green-600;
   }
 
-  /* 警告狀態 (紅色邊框與文字) */
+  警告狀態 (紅色邊框與文字)
   .flash-alert {
     @apply border-red-500;
   }
   .flash-alert .flash-message-text {
     @apply text-red-600;
   }
+
+    */
 }

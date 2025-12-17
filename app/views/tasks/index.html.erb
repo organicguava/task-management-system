@@ -1,143 +1,173 @@
 <div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-gray-800"><%= t('tasks.index.header') %></h1>
-    
-    <%= link_to t('tasks.index.create_button'), new_task_path, class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-200" %>
-  </div>
-
-  <div class="flex justify-end mb-4">
-    <details class="relative group">
-    <summary class="list-none cursor-pointer text-gray-700 py-2 px-4 inline-flex items-center hover:bg-gray-50">
-        <span>排序方式</span>
+  <%= turbo_frame_tag "tasks_list" do %>
+    <div class="mb-6">
+      <%# 表單連結autosubmit controller 做「一更改資料就自動提交」 %>
+      <%= search_form_for @q, url: tasks_path, data: { controller: "autosubmit", turbo_frame: "tasks_list" },class: "flex flex-col sm:flex-row justify-between items-center gap-4" do |f| %>
         
-        <svg class="ml-2" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12.6668 6L8.00016 10.6667L3.3335 6" stroke="#B4BAC3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </summary>
+        <div class="flex flex-1 items-center gap-3 w-full sm:w-auto">
+          <%# --- A. 搜尋框 --- %>
+          <div class="relative w-full sm:w-64">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <%= f.search_field :title_cont, 
+                placeholder: "Search",               
+                class: "pl-10 block w-full rounded-full border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 [&::-webkit-search-cancel-button]:hidden" %>
 
-      <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-xl z-50">
-        <div class="py-1">
-
-          <%= my_sort_link 'created_at', Task.human_attribute_name(:created_at), class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left !no-underline" %>          
-          <%= my_sort_link 'end_time', Task.human_attribute_name(:end_time), class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left !no-underline" %>
-          <%= my_sort_link 'priority', Task.human_attribute_name(:priority), class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left !no-underline" %>
+            <%# search title filter篩選邏輯 %>      
+            <% if params[:q] && params[:q][:title_cont].present? %>
+              <%# 確保search filter取消選取時，其他filter的篩選資料還在%>
+              <%# 加入indifferent_access,current_params[:q] 才能正確抓到 request.query_parameters["q"] 的資料%>
+              <%  
+              current_params = request.query_parameters.deep_dup.with_indifferent_access
+              current_params[:q]&.delete(:title_cont)
+              current_params.delete(:page)
+              %>
+              <%# search title filter中的清除按鈕 %> 
+              <%= link_to tasks_path(current_params), class: "absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600" do %>
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+              <% end %>
+            <% end %>
 
           </div>
-      </div>
-    </details>
-  </div>
 
+          <%# priority filter 篩選邏輯 %>
+          <div class="relative">
+              <%= f.select :priority_eq, 
+              Task.priorities.map { |k, v| [t("activerecord.enums.task.priority.#{k}"), v] }, 
+              { include_blank: Task.human_attribute_name(:priority) },
+              class: "appearance-none block w-full pl-4 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-full bg-white text-gray-700 cursor-pointer hover:bg-gray-50 transition",
+              data: { action: "change->autosubmit#search" } %>
+            
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+          </div>
 
-  <div class="mb-4 bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200">
-    <%= form_with scope: :q, url: tasks_path, method: :get, class: "flex...", local: true do |f| %>      
-      <div class="flex-1 min-w-[200px]"> 
-        <%# 配合ranshack f.label 的命名都改成相應的 %>
-        <%= f.label :title_cont, Task.human_attribute_name(:title), class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= f.text_field :title_cont, value: params.dig(:q, :title_cont), class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500", placeholder: "搜尋標題..." %>
-      </div>
-
-      <div class="w-40"> 
-        <%= f.label :status_eq, Task.human_attribute_name(:status), class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%# 使用 options_for_select 搭配 I18n 翻譯 enum %>
-        <%= f.select :status_eq, 
-            Task.statuses.map { |k, v| [t("activerecord.enums.task.status.#{k}"), k] }, 
-            { include_blank: '全部狀態', selected: params.dig(:q, :status_eq) }, 
-            { class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" } 
-        %>
-      </div>
-
-      <div class="w-40">
-        <%= f.label :priority_eq, Task.human_attribute_name(:priority), class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= f.select :priority_eq,
-            Task.priorities.map { |k, v| [t("activerecord.enums.task.priority.#{k}"), k] },
-            { include_blank: '全部優先順序', selected: params.dig(:q, :priority_eq) },
-            { class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" }
-        %>
-      </div>
-
-      <%= f.submit t('common.search', default: '搜尋'), class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition cursor-pointer" %>
-      
-      <%= link_to "重置", tasks_path, class: "text-gray-500 hover:text-gray-700 px-4 py-2" %>
-      
-      
-    <% end %>
-  </div>
-
-  <div class="overflow-x-auto bg-white rounded-lg shadow overflow-hidden">
-    <table class="min-w-full leading-normal">
-      <thead>
-        <tr>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-            <%= Task.human_attribute_name(:title) %>
-          </th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-            <%= Task.human_attribute_name(:content) %>
-          </th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-             <%= my_sort_link 'end_time', Task.human_attribute_name(:end_time) %>
-          </th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-             <%= my_sort_link 'status', Task.human_attribute_name(:status) %>
-          </th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-             <%= my_sort_link 'priority', Task.human_attribute_name(:priority) %>
-          </th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-            <%= t('tasks.index.actions') %>
-          </th>
-        </tr>
-      </thead>
-      
-      <tbody>
-        <% @tasks.each do |task| %> <tr class="hover:bg-gray-50 transition duration-150">
-            <td class="px-5 py-5 border-b border-gray-200 text-sm">
-              <p class="text-gray-900 whitespace-no-wrap font-medium">
-                <%= task.title %> </p>
-            </td>
-
-            <td class="px-5 py-5 border-b border-gray-200 text-sm">
-              <p class="text-gray-600 whitespace-no-wrap">
-                <%= task.content %> </p>
-            </td>
-
-            <td class="px-5 py-5 border-b border-gray-200 text-sm">
-              <p class="text-gray-900 whitespace-no-wrap">
-                <%= task.end_time&.strftime('%Y-%m-%d %H:%M') %>
-              </p>
-            </td>
-
-            <td class="px-5 py-5 border-b border-gray-200 text-sm">
-              <p class="text-gray-600 whitespace-no-wrap">
-                <%= t("activerecord.enums.task.status.#{task.status}") %> </p>  <%# I18n.t 搭配 Enum Key (查內容值) %>
-            </td>
-
-            <td class="px-5 py-5 border-b border-gray-200 text-sm">
-              <p class="text-gray-600 whitespace-no-wrap">
-                <%= t("activerecord.enums.task.priority.#{task.priority}") %> </p>  <%# I18n.t 搭配 Enum Key (查內容值) %>
-            </td>
-       
-
-            <td class="px-5 py-5 border-b border-gray-200 text-sm">
-              <div class="flex items-center space-x-4">
-                <%= link_to t('action.edit'), edit_task_path(task), class: "text-indigo-600 hover:text-indigo-900 font-medium" %>
-                
-                <%= link_to t('action.delete'), task_path(task), 
-                    data: { 
-                      turbo_method: :delete, 
-                      turbo_confirm: t('action.confirm_delete', title: task.title) 
-                    }, 
-                    class: "text-red-600 hover:text-red-900 font-medium" 
-                %>
+          <%# status filter 篩選邏輯 %>
+          <div class="relative">
+            <%= f.select :status_eq, 
+              Task.statuses.map { |k, v| [t("activerecord.enums.task.status.#{k}"), v] }, 
+              { include_blank: Task.human_attribute_name(:status) }, 
+              class: "appearance-none block w-full pl-4 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-full bg-white text-gray-700 cursor-pointer hover:bg-gray-50 transition",
+              data: { action: "change->autosubmit#search" } %>
+              
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
               </div>
-            </td>
-          </tr>
-        <% end %> </tbody>
-    </table>
-  </div>
+          </div>
 
-  <%# 使用 pagy_nav 印出分頁條 %>
-  <div class="pagy-container">
-    <%== pagy_nav(@pagy) %>
-  </div>
+          <%= f.submit "Filter", class: "hidden" %> <%# 因為移除了原本UI中的搜尋與重置按鈕，改成隱藏的提交按鈕，由autosubmit controller觸發時執行原本觸發按鈕的行為 %>
+        </div>
+
+        <div class="flex items-center gap-4">
+          
+          <div class="relative group">
+            <button type="button" class="flex items-center text-gray-500 text-sm gap-1 hover:text-gray-700 focus:outline-none">
+              <span>Sorting</span>
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+            </button>
+
+            <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200">
+              <div class="py-1">
+                <%= sort_link @q, :created_at, Task.human_attribute_name(:created_at), class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" %>
+                <%= sort_link @q, :end_time, Task.human_attribute_name(:end_time), class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" %>
+                <%= sort_link @q, :priority, Task.human_attribute_name(:priority), class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" %>
+              </div>
+            </div>
+          </div>
+
+          <%= link_to new_task_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition" do %>
+            <svg class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            <%= t('tasks.index.create_button') %>
+          <% end %>
+
+        </div>
+      <% end %>
+    </div>
+
+    <%# 任務列表表格 %>
+    <div class="overflow-x-auto bg-white rounded-lg shadow overflow-hidden"> <%#搜尋框的x%>
+      <table class="min-w-full leading-normal">
+        <thead>
+          <tr>
+            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <%= Task.human_attribute_name(:title) %>
+            </th>
+            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <%= Task.human_attribute_name(:content) %>
+            </th>
+            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <%= my_sort_link 'end_time', Task.human_attribute_name(:end_time) %>
+            </th>
+            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <%= my_sort_link 'status', Task.human_attribute_name(:status) %>
+            </th>
+            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <%= my_sort_link 'priority', Task.human_attribute_name(:priority) %>
+            </th>
+            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <%= t('tasks.index.actions') %>
+            </th>
+          </tr>
+        </thead>
+        
+        <tbody>
+          <% @tasks.each do |task| %> <tr class="hover:bg-gray-50 transition duration-150">
+              <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                <p class="text-gray-900 whitespace-no-wrap font-medium">
+                  <%= task.title %> </p>
+              </td>
+
+              <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                <p class="text-gray-600 whitespace-no-wrap">
+                  <%= task.content %> </p>
+              </td>
+
+              <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                <p class="text-gray-900 whitespace-no-wrap">
+                  <%= task.end_time&.strftime('%Y-%m-%d %H:%M') %>
+                </p>
+              </td>
+
+              <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                <p class="text-gray-600 whitespace-no-wrap">
+                  <%= t("activerecord.enums.task.status.#{task.status}") %> </p>  <%# I18n.t 搭配 Enum Key (查內容值) %>
+              </td>
+
+              <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                <p class="text-gray-600 whitespace-no-wrap">
+                  <%= t("activerecord.enums.task.priority.#{task.priority}") %> </p>  <%# I18n.t 搭配 Enum Key (查內容值) %>
+              </td>
+        
+
+              <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                <div class="flex items-center space-x-4">
+                  <%= link_to t('action.edit'), edit_task_path(task), class: "text-indigo-600 hover:text-indigo-900 font-medium", data: { turbo_frame: "_top" } %>
+                  
+                  <%= link_to t('action.delete'), task_path(task), 
+                      data: { 
+                        turbo_method: :delete, 
+                        turbo_confirm: t('action.confirm_delete', title: task.title) ,
+                        turbo_frame: "_top"
+                      }, 
+                      class: "text-red-600 hover:text-red-900 font-medium" 
+                  %>
+                </div>
+              </td>
+            </tr>
+          <% end %> </tbody>
+      </table>
+    </div>
+
+    <%# 使用 pagy_nav 印出分頁條 %>
+    <div class="pagy-container">
+      <%== pagy_nav(@pagy) %>
+    </div>
+  <% end %>
 
 </div>

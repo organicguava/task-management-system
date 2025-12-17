@@ -3,25 +3,38 @@ class TasksController < ApplicationController
   before_action :set_task, only: %i[edit update destroy]
 
   def index
-    # 使用chain，像接力棒一樣把查詢條件串起來
+     
+=begin
+    已用ransack重構
     @tasks = Task.all
-                  .search_by_title(params[:q])      # 搜尋標題
-                  .search_by_status(params[:status]) # 搜尋狀態
-                  .search_by_priority(params[:priority]) # 搜尋優先順序
-                  .controller_index_query(params[:sort_by], params[:direction]) # filter 排序
-    # 注意！直到 View 讀取 @tasks 時才會發送一次 SQL
+                  .search_by_title(params[:q])      
+                  .search_by_status(params[:status]) 
+                  .search_by_priority(params[:priority]) 
+                  .controller_index_query(params[:sort_by], params[:direction]) 
+=end
 
     #  1. 篩選 (Filter) - 使用 Ransack, 且搜尋後的結果進行分頁
     @q = Task.ransack(params[:q])
 
+    #  取得初步結果，distinct: true 可以避免關聯查詢時出現重複資料
+    @tasks = @q.result(distinct: true)
+
     #  2. 排序 (Sort) - 使用你 Model 裡自定義的 scope
-    # @pagy 存放分頁資訊, @tasks 存放該頁的資料
-    # 接住 Ransack 篩選後的結果 (@q.result)，再串接 controller_index_query（"NULLS LAST" 以及 "白名單檢查" 邏輯）
-    sorted_tasks = @q.result.controller_index_query(params[:sort_by], params[:direction])
+    # 這裡做一個相容性處理：
+    # A. 如果是用舊的 Table Header 排序 (傳送 sort_by 和 direction 參數) -> 寫在tasks_helper的自定義scope
+    if params[:sort_by].present?
+      @tasks = @tasks.controller_index_query(params[:sort_by], params[:direction])
+    
+    #    B. 如果是用 Ransack 的下拉選單排序 (params[:q][:s]) -> Ransack 會在上面 @q.result 自動處理-> 處理sorting filter排序
+    #    C. 如果完全沒有排序 -> 給一個預設值 (例如建立時間倒序)
+    elsif @q.sorts.empty?
+      @tasks = @tasks.order(created_at: :desc)
+    end
 
     # 3. 分頁 (Pagination) - 使用 Pagy
+    # @pagy 存放分頁資訊, @tasks 存放該頁的資料
     # 最後將篩選並排序好的資料丟給 Pagy, 並在此直接設定每頁幾筆 (limit) 和溢位處理 (overflow)
-    @pagy, @tasks = pagy(sorted_tasks, limit: 10, overflow: :last_page)
+    @pagy, @tasks = pagy(@tasks, limit: 10, overflow: :last_page)
   end
 
   def new
