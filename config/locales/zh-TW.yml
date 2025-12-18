@@ -31,6 +31,9 @@ zh-TW:
       content: "內容"
       actions: "操作"
       create_button: "新增任務"
+      sorting: "排序"
+      filter: "篩選"
+      search: "搜尋"
     new:
       title: "新增任務"
       submit: "提交"
@@ -72,3 +75,4 @@ zh-TW:
   common:
     all: "全部狀態"
     search: "搜尋"
+    actions: "操作"

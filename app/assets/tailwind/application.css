@@ -1,32 +1,29 @@
 @import "tailwindcss";
 
 @layer components {
-  /* Flash Message 容器 */
-  .flash-message {
 
-    @apply flex items-center fixed top-5 right-5 z-50;
-    @apply w-auto min-w-[250px] h-16 px-6 bg-white border border-gray-200 rounded-lg shadow-lg;
-    @apply opacity-100; 
+  /* 分頁容器 */
+  .pagy {
+    @apply flex items-center justify-center space-x-2 mt-4;
   }
 
-  /* 文字樣式 */
-  .flash-message-text {
-    @apply font-sans text-gray-700 text-base font-medium;
+  /* 所有的頁碼連結 (包含上一頁、下一頁、數字) */
+  .pagy a {
+    @apply px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition duration-150 cursor-pointer block text-center decoration-0;
   }
 
-  /* 成功狀態 (綠色邊框與文字) */
-  .flash-success {
-    @apply border-green-500;
-  }
-  .flash-success .flash-message-text {
-    @apply text-green-600;
+  /* 當前頁面 (Active) - 截圖顯示 class="current" */
+  .pagy a.current {
+    @apply border-blue-600 bg-blue-600 text-white shadow-sm hover:bg-blue-700;
   }
 
-  /* 警告狀態 (紅色邊框與文字) */
-  .flash-alert {
-    @apply border-red-500;
+  /* 禁用狀態 (Disabled) - 截圖顯示 aria-disabled="true" */
+  .pagy a[aria-disabled="true"] {
+    @apply bg-gray-100 text-gray-400 cursor-not-allowed hover:bg-gray-100 border-gray-200;
   }
-  .flash-alert .flash-message-text {
-    @apply text-red-600;
+  
+  /* 省略號 Gap (...) - 通常是 span */
+  .pagy .gap {
+    @apply text-gray-400 font-medium px-2;
   }
 }
