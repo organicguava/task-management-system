@@ -3,14 +3,13 @@ class TasksController < ApplicationController
   before_action :set_task, only: %i[edit update destroy]
 
   def index
-     
 =begin
     已用ransack重構
     @tasks = Task.all
-                  .search_by_title(params[:q])      
-                  .search_by_status(params[:status]) 
-                  .search_by_priority(params[:priority]) 
-                  .controller_index_query(params[:sort_by], params[:direction]) 
+                  .search_by_title(params[:q])
+                  .search_by_status(params[:status])
+                  .search_by_priority(params[:priority])
+                  .controller_index_query(params[:sort_by], params[:direction])
 =end
 
     #  1. 篩選 (Filter) - 使用 Ransack, 且搜尋後的結果進行分頁
@@ -24,7 +23,7 @@ class TasksController < ApplicationController
     # A. 如果是用舊的 Table Header 排序 (傳送 sort_by 和 direction 參數) -> 寫在tasks_helper的自定義scope
     if params[:sort_by].present?
       @tasks = @tasks.controller_index_query(params[:sort_by], params[:direction])
-    
+
     #    B. 如果是用 Ransack 的下拉選單排序 (params[:q][:s]) -> Ransack 會在上面 @q.result 自動處理-> 處理sorting filter排序
     #    C. 如果完全沒有排序 -> 給一個預設值 (例如建立時間倒序)
     elsif @q.sorts.empty?

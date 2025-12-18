@@ -68,8 +68,9 @@ RSpec.configure do |config|
 
   # 【設定 B】：每一個 individual example (it) 執行前後，使用交易 (Transaction) 的方式來確保資料庫乾淨
   config.around(:each) do |example|
-    # 設定策略為交易
-    DatabaseCleaner.strategy = :transaction
+    # 如果這個測試有標記 js: true (代表是瀏覽器驅動)，就使用 :truncation (慢但穩)
+    # 否則 (一般單元測試)，使用 :transaction (快且安全)
+    DatabaseCleaner.strategy = example.metadata[:js] ? :truncation : :transaction
 
     # cleaning 方法會自動執行 start (開始前) 和 clean (結束後)
     DatabaseCleaner.cleaning do

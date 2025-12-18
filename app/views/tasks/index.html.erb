@@ -1,8 +1,8 @@
 <div class="container mx-auto px-4 py-8">
-  <%= turbo_frame_tag "tasks_list" do %>
+  <%= turbo_frame_tag "tasks_list", data: { turbo_action: "advance" } do %>
     <div class="mb-6">
       <%# 表單連結autosubmit controller 做「一更改資料就自動提交」 %>
-      <%= search_form_for @q, url: tasks_path, data: { controller: "autosubmit", turbo_frame: "tasks_list" },class: "flex flex-col sm:flex-row justify-between items-center gap-4" do |f| %>
+      <%= search_form_for @q, url: tasks_path, method: :get, data: { controller: "autosubmit", turbo_frame: "tasks_list" },class: "flex flex-col sm:flex-row justify-between items-center gap-4" do |f| %>
         
         <div class="flex flex-1 items-center gap-3 w-full sm:w-auto">
           <%# --- A. 搜尋框 --- %>
@@ -13,7 +13,8 @@
               </svg>
             </div>
             <%= f.search_field :title_cont, 
-                placeholder: "Search",               
+                placeholder: t('tasks.index.search'), 
+                data: { action: "input->autosubmit#search" },              
                 class: "pl-10 block w-full rounded-full border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 [&::-webkit-search-cancel-button]:hidden" %>
 
             <%# search title filter篩選邏輯 %>      
@@ -39,7 +40,8 @@
               Task.priorities.map { |k, v| [t("activerecord.enums.task.priority.#{k}"), v] }, 
               { include_blank: Task.human_attribute_name(:priority) },
               class: "appearance-none block w-full pl-4 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-full bg-white text-gray-700 cursor-pointer hover:bg-gray-50 transition",
-              data: { action: "change->autosubmit#search" } %>
+              data: { action: "change->autosubmit#search" } %> 
+              <%# autosubmit_controller.js會監聽change事件，來判斷要不要送出field 中資料 %>
             
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -64,9 +66,9 @@
 
         <div class="flex items-center gap-4">
           
-          <div class="relative group">
+          <div class="relative group"> <%# 排序篩選器下拉選單 %>
             <button type="button" class="flex items-center text-gray-500 text-sm gap-1 hover:text-gray-700 focus:outline-none">
-              <span>Sorting</span>
+              <span><%= t('tasks.index.sorting') %></span>
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
             </button>
 
@@ -78,8 +80,12 @@
               </div>
             </div>
           </div>
-
-          <%= link_to new_task_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition" do %>
+          <%# 新增任務按鈕 %>
+          <%= link_to new_task_path, 
+            { 
+              class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition",
+              data: { turbo_frame: "_top" }
+            } do %> <%# 若沒有此行，Turbo 預設會期待伺服器回傳的 new 頁面裡也要包含一個 <turbo-frame id="tasks_list"> 來替換內容 %>
             <svg class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
@@ -91,83 +97,128 @@
     </div>
 
     <%# 任務列表表格 %>
-    <div class="overflow-x-auto bg-white rounded-lg shadow overflow-hidden"> <%#搜尋框的x%>
-      <table class="min-w-full leading-normal">
-        <thead>
-          <tr>
-            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              <%= Task.human_attribute_name(:title) %>
-            </th>
-            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              <%= Task.human_attribute_name(:content) %>
-            </th>
-            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              <%= my_sort_link 'end_time', Task.human_attribute_name(:end_time) %>
-            </th>
-            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              <%= my_sort_link 'status', Task.human_attribute_name(:status) %>
-            </th>
-            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              <%= my_sort_link 'priority', Task.human_attribute_name(:priority) %>
-            </th>
-            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              <%= t('tasks.index.actions') %>
-            </th>
-          </tr>
-        </thead>
-        
-        <tbody>
-          <% @tasks.each do |task| %> <tr class="hover:bg-gray-50 transition duration-150">
-              <td class="px-5 py-5 border-b border-gray-200 text-sm">
-                <p class="text-gray-900 whitespace-no-wrap font-medium">
-                  <%= task.title %> </p>
-              </td>
-
-              <td class="px-5 py-5 border-b border-gray-200 text-sm">
-                <p class="text-gray-600 whitespace-no-wrap">
-                  <%= task.content %> </p>
-              </td>
-
-              <td class="px-5 py-5 border-b border-gray-200 text-sm">
-                <p class="text-gray-900 whitespace-no-wrap">
-                  <%= task.end_time&.strftime('%Y-%m-%d %H:%M') %>
-                </p>
-              </td>
-
-              <td class="px-5 py-5 border-b border-gray-200 text-sm">
-                <p class="text-gray-600 whitespace-no-wrap">
-                  <%= t("activerecord.enums.task.status.#{task.status}") %> </p>  <%# I18n.t 搭配 Enum Key (查內容值) %>
-              </td>
-
-              <td class="px-5 py-5 border-b border-gray-200 text-sm">
-                <p class="text-gray-600 whitespace-no-wrap">
-                  <%= t("activerecord.enums.task.priority.#{task.priority}") %> </p>  <%# I18n.t 搭配 Enum Key (查內容值) %>
-              </td>
-        
-
-              <td class="px-5 py-5 border-b border-gray-200 text-sm">
-                <div class="flex items-center space-x-4">
-                  <%= link_to t('action.edit'), edit_task_path(task), class: "text-indigo-600 hover:text-indigo-900 font-medium", data: { turbo_frame: "_top" } %>
-                  
-                  <%= link_to t('action.delete'), task_path(task), 
-                      data: { 
-                        turbo_method: :delete, 
-                        turbo_confirm: t('action.confirm_delete', title: task.title) ,
-                        turbo_frame: "_top"
-                      }, 
-                      class: "text-red-600 hover:text-red-900 font-medium" 
-                  %>
-                </div>
-              </td>
+    <div class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+      <div class="overflow-x-auto">
+        <table class="min-w-full leading-normal">
+          
+          <thead>
+            <tr class="bg-gray-50 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th class="px-5 py-3">
+                <%# 使用 Ransack sort_link，並加上 Tailwind class %>
+                <%= sort_link @q, :title, Task.human_attribute_name(:title), class: "hover:text-gray-900 flex items-center" %>
+              </th>
+              <th class="px-5 py-3 hidden md:table-cell"> <%# 在手機版隱藏內容欄位 %>
+                <%= Task.human_attribute_name(:content) %>
+              </th>
+              <th class="px-5 py-3">
+                <%= sort_link @q, :status, Task.human_attribute_name(:status), class: "hover:text-gray-900 flex items-center" %>
+              </th>
+              <th class="px-5 py-3">
+                <%= sort_link @q, :priority, Task.human_attribute_name(:priority), class: "hover:text-gray-900 flex items-center" %>
+              </th>
+              <th class="px-5 py-3 cursor-pointer">
+                <%= sort_link @q, :end_time, Task.human_attribute_name(:end_time), class: "hover:text-gray-900 flex items-center" %>
+              </th>
+              <th class="px-5 py-3 text-right">
+                <%= t('common.actions') %> 
+              </th>
             </tr>
-          <% end %> </tbody>
-      </table>
-    </div>
+          </thead>
 
-    <%# 使用 pagy_nav 印出分頁條 %>
-    <div class="pagy-container">
-      <%== pagy_nav(@pagy) %>
+          <tbody class="text-gray-700 text-sm font-light">
+            <% @tasks.each do |task| %>
+              <tr class="border-b border-gray-200 hover:bg-gray-50 transition duration-150 ease-in-out">
+                
+                <%# 1. 標題 %>
+                <td class="px-5 py-4">
+                  <p class="font-medium text-gray-900 truncate max-w-[12rem]"><%= task.title %></p>
+                </td>
+
+                <%# 2. 內容 (截斷顯示) %>
+                <td class="px-5 py-4 hidden md:table-cell">
+                  <p class="text-gray-500 truncate max-w-[16rem]"><%= task.content.truncate(50) %></p>
+                </td>
+
+                <%# 3. 狀態 (彩色標籤 Badge) %>
+                <td class="px-5 py-4">
+                  <% 
+                    status_colors = {
+                      'pending' => 'bg-gray-100 text-gray-600',
+                      'processing' => 'bg-blue-100 text-blue-600',
+                      'completed' => 'bg-green-100 text-green-600'
+                    }
+                    status_class = status_colors[task.status] || 'bg-gray-100 text-gray-600'
+                  %>
+                  <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full <%= status_class %>">
+                    <%= t("activerecord.enums.task.status.#{task.status}") %>
+                  </span>
+                </td>
+
+                <%# 4. 優先級 (彩色標籤 Badge) %>
+                <td class="px-5 py-4">
+                  <% 
+                    priority_colors = {
+                      'low' => 'bg-gray-100 text-gray-600',
+                      'medium' => 'bg-yellow-100 text-yellow-600',
+                      'high' => 'bg-red-100 text-red-600'
+                    }
+                    priority_class = priority_colors[task.priority] || 'bg-gray-100 text-gray-600'
+                  %>
+                  <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full <%= priority_class %>">
+                    <%= t("activerecord.enums.task.priority.#{task.priority}") rescue task.priority %>
+                  </span>
+                </td>
+
+                <%# 5. 結束時間 %>
+                <td class="px-5 py-4 text-gray-500">
+                  <%# 使用 l (localize) 方法格式化時間，如果時間是 nil 則不顯示 %>
+                  <%= l(task.end_time, format: :short) if task.end_time.present? %>
+                </td>
+
+                <%# 6. 操作按鈕  %>
+                <td class="px-5 py-4 text-right">
+                  <div class="flex items-center justify-end space-x-3">
+                    <%# 編輯按鈕 Icon %>
+                    <%= link_to edit_task_path(task), 
+                        class: "text-gray-400 hover:text-indigo-600 transition duration-150", 
+                        title: t('action.edit'),
+                        data: { turbo_frame: "_top" } do %>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                      </svg>
+                    <% end %>
+                    
+                    <%# 刪除按鈕 Icon %>
+                    <%= link_to task_path(task), 
+                        data: { 
+                          turbo_method: :delete, 
+                          turbo_confirm: t('action.confirm_delete', title: task.title),
+                          turbo_frame: "_top"
+                        }, 
+                        class: "text-gray-400 hover:text-red-600 transition duration-150",
+                        title: t('action.delete') do %>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.052.68-.107 1.022-.166m-1.022.165L5.366 9.93m0 0-.209 9.081m0-9.081.209-9.081M10.5 2.25h3m-3 0a2.25 2.25 0 0 0-2.25 2.25v.912m7.5 0v-.912a2.25 2.25 0 0 0-2.25-2.25h-1.5" />
+                      </svg>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      
+      <% if @pagy.pages > 1 %>
+        <div class="px-5 py-5 bg-white border-t border-gray-200 flex items-center justify-center">
+          <%# 若沒有使用data-turbo-action="advance"，在 Turbo Frame 裡面換頁時，預設網址列是不會變的。加上這個屬性後，網址列會跟著變成 /tasks?page=2。這樣使用者按「上一頁」按鈕時，才能真的回到上一頁，而不是跳出網站。 %>
+          <div class="pagy-container text-sm text-gray-600" >
+            <%# 使用 pagy helper 的pagy_nav 並使用外部CSS加上樣式 %>
+            <%== pagy_nav(@pagy) %>
+          </div>
+        </div>
+      <% end %>
+      
     </div>
   <% end %>
-
 </div>
