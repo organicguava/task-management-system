@@ -19,11 +19,6 @@ class TasksController < ApplicationController
     #  取得初步結果，distinct: true 可以避免關聯查詢時出現重複資料
     @tasks = @q.result(distinct: true)
 
-    # 相容性處理 (保留舊有的 Table Header 排序功能)
-    # 如果網址參數有舊制的 sort_by (非 Ransack)，則覆蓋原本的排序
-    if params[:sort_by].present?
-      @tasks = @tasks.controller_index_query(params[:sort_by], params[:direction])
-    end
 
     # 分頁設定- 使用 Pagy
     @pagy, @tasks = pagy(@tasks, limit: 10, overflow: :last_page)
