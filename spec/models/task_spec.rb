@@ -1,6 +1,30 @@
 require 'rails_helper'
 
 RSpec.describe Task, type: :model do
+  describe '關聯性測試' do
+    context '當建立有使用者的任務' do
+      let(:task) { create(:task) }
+
+      it '會綁定使用者' do
+        expect(task.user).to be_present
+      end
+    end
+
+    context '當缺少使用者時' do
+      let(:task) { Task.new(title: '無主孤魂', user: nil) }
+
+      before { task.validate }
+
+      it '無法建立' do
+        expect(task).not_to be_valid
+      end
+
+      it '回報 user 必須存在' do
+        expect(task.errors[:user]).not_to be_empty
+      end
+    end
+  end
+
   describe '驗證' do
     context 'title 欄位' do
       it { is_expected.to validate_presence_of(:title) }

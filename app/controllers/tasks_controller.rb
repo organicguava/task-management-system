@@ -12,27 +12,20 @@ class TasksController < ApplicationController
                   .controller_index_query(params[:sort_by], params[:direction])
 =end
 
-    #  1. 篩選 (Filter) - 使用 Ransack, 且搜尋後的結果進行分頁
-    @q = Task.ransack(params[:q])
+    # 加入 .includes(:user), 避免 N+1 查詢問題
+    # 使用 reverse_merge 設定預設排序為「建立時間倒序」，避免每次都要在 view 傳參數
+    @q = Task.includes(:user).ransack(params.fetch(:q, {}).reverse_merge(s: "created_at desc"))
 
     #  取得初步結果，distinct: true 可以避免關聯查詢時出現重複資料
     @tasks = @q.result(distinct: true)
 
-    #  2. 排序 (Sort) - 使用你 Model 裡自定義的 scope
-    # 這裡做一個相容性處理：
-    # A. 如果是用舊的 Table Header 排序 (傳送 sort_by 和 direction 參數) -> 寫在tasks_helper的自定義scope
+    # 相容性處理 (保留舊有的 Table Header 排序功能)
+    # 如果網址參數有舊制的 sort_by (非 Ransack)，則覆蓋原本的排序
     if params[:sort_by].present?
       @tasks = @tasks.controller_index_query(params[:sort_by], params[:direction])
-
-    #    B. 如果是用 Ransack 的下拉選單排序 (params[:q][:s]) -> Ransack 會在上面 @q.result 自動處理-> 處理sorting filter排序
-    #    C. 如果完全沒有排序 -> 給一個預設值 (例如建立時間倒序)
-    elsif @q.sorts.empty?
-      @tasks = @tasks.order(created_at: :desc)
     end
 
-    # 3. 分頁 (Pagination) - 使用 Pagy
-    # @pagy 存放分頁資訊, @tasks 存放該頁的資料
-    # 最後將篩選並排序好的資料丟給 Pagy, 並在此直接設定每頁幾筆 (limit) 和溢位處理 (overflow)
+    # 分頁設定- 使用 Pagy
     @pagy, @tasks = pagy(@tasks, limit: 10, overflow: :last_page)
   end
 
@@ -42,6 +35,12 @@ class TasksController < ApplicationController
 
   def create # 用來接收post(送)請求的
     @task = Task.new(task_params)
+
+    # --- Step 19 暫時使用 (CI Friendly 版本) ---
+    # 如果找不到使用者 (CI環境)，就當場建一個，確保測試不會掛掉
+    # 等到 Step 20 做登入功能時，就會被 current_user 取代並移除
+    @task.user = User.first || User.create!(name: "Admin", email: "admin@example.com", password: "123456", password_confirmation: "123456")
+    # ----------------------------------------
 
     if @task.save
       redirect_to tasks_path, notice: t("flash.tasks.create.notice")
