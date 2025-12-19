@@ -13,7 +13,9 @@ class TasksController < ApplicationController
 =end
 
     #  1. 篩選 (Filter) - 使用 Ransack, 且搜尋後的結果進行分頁
-    @q = Task.ransack(params[:q])
+    # 使用 params.fetch(:q, {}) 確保即使沒有搜尋參數 (nil) 也能回傳空 Hash，避免報錯
+    # 使用 reverse_merge 設定預設值：只有當 params 裡沒有 :s (排序) 時，才會使用 'created_at desc'
+    @q = Task.ransack(params.fetch(:q, {}).reverse_merge(s: "created_at desc"))
 
     #  取得初步結果，distinct: true 可以避免關聯查詢時出現重複資料
     @tasks = @q.result(distinct: true)
