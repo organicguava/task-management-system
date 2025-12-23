@@ -1,6 +1,9 @@
 class TasksController < ApplicationController
   # 將重複的程式碼抽出來，放到 private method 裡
   before_action :set_task, only: %i[edit update destroy]
+  # 加入權限控管：沒登入的人無法進入任何任務相關頁面
+  before_action :authenticate_user! # 輸入http://localhost:3000/tasks後，會先被導向login頁面
+  before_action :set_task, only: %i[edit update destroy]
 
   def index
 =begin
@@ -14,7 +17,7 @@ class TasksController < ApplicationController
 
     # 加入 .includes(:user), 避免 N+1 查詢問題
     # 使用 reverse_merge 設定預設排序為「建立時間倒序」，避免每次都要在 view 傳參數
-    @q = Task.includes(:user).ransack(params.fetch(:q, {}).reverse_merge(s: "created_at desc"))
+    @q = current_user.tasks.includes(:user).ransack(params.fetch(:q, {}).reverse_merge(s: "created_at desc"))
 
     #  取得初步結果，distinct: true 可以避免關聯查詢時出現重複資料
     @tasks = @q.result(distinct: true)
@@ -29,13 +32,7 @@ class TasksController < ApplicationController
   end
 
   def create # 用來接收post(送)請求的
-    @task = Task.new(task_params)
-
-    # --- Step 19 暫時使用 (CI Friendly 版本) ---
-    # 如果找不到使用者 (CI環境)，就當場建一個，確保測試不會掛掉
-    # 等到 Step 20 做登入功能時，就會被 current_user 取代並移除
-    @task.user = User.first || User.create!(name: "Admin", email: "admin@example.com", password: "123456", password_confirmation: "123456")
-    # ----------------------------------------
+    @task = current_user.tasks.build(task_params)
 
     if @task.save
       redirect_to tasks_path, notice: t("flash.tasks.create.notice")
@@ -76,7 +73,7 @@ class TasksController < ApplicationController
 
   # edit update destroy 都有此動作，提取出來成為共用方法
   def set_task
-    @task = Task.find(params[:id])
+    @task = current_user.tasks.find(params[:id])
   end
 
   def task_params

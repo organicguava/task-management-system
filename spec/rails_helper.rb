@@ -25,6 +25,9 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 
+# 自動載入 spec/support/ 目錄下的所有支援檔案，目前是為了要用到 LoginMacros
+Dir[Rails.root.join('spec', 'support', '**', '*.rb')].sort.each { |f| require f }
+
 RSpec.configure do |config|
   # 讓 RSpec 認識 FactoryBot 的語法
   config.include FactoryBot::Syntax::Methods
@@ -35,6 +38,9 @@ RSpec.configure do |config|
   config.fixture_paths = [
     Rails.root.join('spec/fixtures')
   ]
+  
+  # 讓所有 type: :feature 的測試都能使用 sign_in / sign_out 方法
+  config.include LoginMacros, type: :feature
 
   # 必須設為 false，因為我們要手動控制 DatabaseCleaner
   # 這是避免 CI 資料殘留的關鍵設定
