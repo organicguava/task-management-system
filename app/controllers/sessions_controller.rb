@@ -1,21 +1,24 @@
 class SessionsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:new, :create]
-  
+  skip_before_action :authenticate_user!, only: [ :new, :create ]
+
   def new
     # 顯示登入表單
   end
 
   def create
-    # 1. 透過 email 撈出使用者
-    user = User.find_by(email: params[:email])
-    
-    # 2. 驗證密碼 (authenticate 是 bcrypt 提供的方法)
-    if user && user.authenticate(params[:password])
-      # 3. 寫入 Session
+    # 為了應對 form_with(url: login_path) 產生的 params[:email]
+    # 以及未來可能改用 model 產生的 params[:user][:email]
+    email = params.dig(:user, :email) || params[:email]
+    password = params.dig(:user, :password) || params[:password]
+
+    user = User.find_by(email: email)
+
+    if user && user.authenticate(password)
       session[:user_id] = user.id
       redirect_to root_path, notice: t("flash.auth.login")
     else
-      # 4. 登入失敗
+      # 建立一個非持久化的 user 物件，僅為了回填表單用（登入失敗後可以顯示原本輸入的 Email）
+      @user = User.new(email: email)
       flash.now[:alert] = t("flash.auth.login_failed")
       render :new, status: :unprocessable_entity
     end

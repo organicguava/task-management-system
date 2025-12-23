@@ -75,6 +75,6 @@ group :test do
   gem "capybara", "~> 3.40"
   gem "selenium-webdriver", "~> 4.38"
   gem "shoulda-matchers", "~> 6.0"
-
+  gem "launchy", "~> 2.5"  # 用於除錯的網頁瀏覽器啟動工具
   gem "database_cleaner-active_record", "~> 2.0" # 測試資料庫清理工具
 end

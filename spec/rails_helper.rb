@@ -38,7 +38,7 @@ RSpec.configure do |config|
   config.fixture_paths = [
     Rails.root.join('spec/fixtures')
   ]
-  
+
   # 讓所有 type: :feature 的測試都能使用 sign_in / sign_out 方法
   config.include LoginMacros, type: :feature
 
