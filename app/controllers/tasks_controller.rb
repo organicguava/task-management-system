@@ -1,11 +1,9 @@
 class TasksController < ApplicationController
   # 將重複的程式碼抽出來，放到 private method 裡
   before_action :set_task, only: %i[edit update destroy]
-  # 加入權限控管：沒登入的人無法進入任何任務相關頁面
-  before_action :authenticate_user! # 輸入http://localhost:3000/tasks後，會先被導向login頁面
   before_action :set_task, only: %i[edit update destroy]
 
-  def index
+
 =begin
     已用ransack重構
     @tasks = Task.all
@@ -14,17 +12,13 @@ class TasksController < ApplicationController
                   .search_by_priority(params[:priority])
                   .controller_index_query(params[:sort_by], params[:direction])
 =end
-
+  def index
     # 加入 .includes(:user), 避免 N+1 查詢問題
     # 使用 reverse_merge 設定預設排序為「建立時間倒序」，避免每次都要在 view 傳參數
     @q = current_user.tasks.includes(:user).ransack(params.fetch(:q, {}).reverse_merge(s: "created_at desc"))
-
-    #  取得初步結果，distinct: true 可以避免關聯查詢時出現重複資料
-    @tasks = @q.result(distinct: true)
-
-
-    # 分頁設定- 使用 Pagy
-    @pagy, @tasks = pagy(@tasks, limit: 10, overflow: :last_page)
+    # 取得初步結果，distinct: true 可以避免關聯查詢時出現重複資料
+    # 先查詢結果 -> 再分頁
+    @pagy, @tasks = pagy(@q.result(distinct: true), limit: 10, overflow: :last_page)
   end
 
   def new

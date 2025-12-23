@@ -18,9 +18,16 @@ RSpec.describe "Authentication", type: :feature, js: true do
       # Capybara 會在這裡自動重試幾秒鐘，直到按鈕解鎖或超時,避免測試過快點擊到還沒啟用的按鈕
       # expect(page).to have_button(I18n.t("users.new.submit"), disabled: false)
 
-      # Stimulus 會偵測輸入並啟用按鈕，等待按鈕變為可點擊後點擊
-      # 注意：Capybara 等待機制會自動處理，但若有延遲可視情況調整
       click_button I18n.t("users.new.submit")
+      if page.has_css?(".text-red-800")
+         puts "\n========== ⚠️ 註冊失敗原因 ⚠️ =========="
+         puts page.all(".text-red-800").map(&:text)
+         puts "======================================\n"
+      else
+         puts "\n========== 📄 目前頁面文字 📄 =========="
+         puts page.text
+         puts "======================================\n"
+      end
       save_and_open_page # launchy:debug
     end
 

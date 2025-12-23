@@ -6,11 +6,8 @@ class SessionsController < ApplicationController
   end
 
   def create
-    # 為了應對 form_with(url: login_path) 產生的 params[:email]
-    # 以及未來可能改用 model 產生的 params[:user][:email]
-    email = params.dig(:user, :email) || params[:email]
-    password = params.dig(:user, :password) || params[:password]
-
+    # 使用 values_at 一次取出，並利用 safe navigation (&.) 避免 nil error
+    email, password = params.require(:user).values_at(:email, :password)
     user = User.find_by(email: email)
 
     if user && user.authenticate(password)

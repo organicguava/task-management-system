@@ -29,11 +29,9 @@ class ApplicationController < ActionController::Base
     current_user.present?
   end
 
-  # 擋門神：放在 Controller 的 before_action 用
+  # 放在 Controller 的 before_action 用: 需要登入才能存取
   def authenticate_user!
-    unless user_signed_in?
-      redirect_to login_path, alert: I18n.t("flash.auth.require_login")
-    end
+    redirect_to login_path, alert: I18n.t("flash.auth.require_login") unless user_signed_in?
   end
 
   # production 環境下啟用 Basic Auth

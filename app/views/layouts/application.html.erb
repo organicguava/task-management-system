@@ -23,8 +23,8 @@
 
     <div class="min-h-screen bg-gray-50 font-sans text-gray-900">
       
-      <%# 如果是登入或註冊流程，完全隱藏 Navbar %>
-      <% unless %w[sessions users].include?(controller_name) && %w[new create].include?(action_name) %>
+      <%# 只要有登入就顯示 Navbar %>
+      <% if user_signed_in? %>
         <%= render "shared/navbar" %>
       <% end %>
       
