@@ -1,7 +1,7 @@
 # spec/features/authentication_spec.rb
 require 'rails_helper'
 
-RSpec.describe "Authentication", type: :feature, js: true do
+RSpec.describe "Authentication", type: :feature do
   subject { page }
 
   # --- 測試情境：使用者註冊 ---
@@ -19,16 +19,6 @@ RSpec.describe "Authentication", type: :feature, js: true do
       # expect(page).to have_button(I18n.t("users.new.submit"), disabled: false)
 
       click_button I18n.t("users.new.submit")
-      if page.has_css?(".text-red-800")
-         puts "\n========== ⚠️ 註冊失敗原因 ⚠️ =========="
-         puts page.all(".text-red-800").map(&:text)
-         puts "======================================\n"
-      else
-         puts "\n========== 📄 目前頁面文字 📄 =========="
-         puts page.text
-         puts "======================================\n"
-      end
-      save_and_open_page # launchy:debug
     end
 
     context "註冊成功" do

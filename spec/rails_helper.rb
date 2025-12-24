@@ -7,15 +7,6 @@ require_relative '../config/environment'
 require 'capybara/rspec'
 require 'capybara/rails'
 
-
-
-Shoulda::Matchers.configure do |config|
-  config.integrate do |with|
-    with.test_framework :rspec
-    with.library :rails
-  end
-end
-
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'
@@ -69,30 +60,13 @@ RSpec.configure do |config|
 
   # --- Capybara Driver 切換設定 ---
   config.before(:each, type: :feature, js: true) do
-    if ENV['CI']
-      # CI 環境：使用無頭模式 (Headless) 以避免崩潰
-      Capybara.current_driver = :selenium_chrome_headless_in_ci
-    else
-      # 本地環境：使用一般 Chrome (可視化) 以便除錯
+    if ENV['JS_BROWSER_VISIBLE'].to_i == 1
       Capybara.current_driver = :selenium_chrome
+    else
+      Capybara.current_driver = :selenium_chrome_headless_in_ci
     end
   end
 
   # 確保此設定在 configure 區塊內
   config.filter_rails_from_backtrace!
-end
-
-# --- 註冊 CI 專用的 Headless Chrome Driver ---
-# 放在 RSpec.configure 區塊外面是正確的
-Capybara.register_driver :selenium_chrome_headless_in_ci do |app|
-  options = Selenium::WebDriver::Chrome::Options.new
-
-  # CI 環境必備參數，防止崩潰
-  options.add_argument("--headless")
-  options.add_argument("--no-sandbox")
-  options.add_argument("--disable-dev-shm-usage")
-  options.add_argument("--disable-gpu")
-  options.add_argument("--window-size=1400,1400")
-
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
 end

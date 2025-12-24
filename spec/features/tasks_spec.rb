@@ -16,7 +16,7 @@ RSpec.describe "Tasks", type: :feature, js: true do
   describe "建立任務" do
     before do
       visit new_task_path
-      save_and_open_page # launchy:debug
+      en_page # launchy:debug
       # 填寫標題與內容
       fill_in Task.human_attribute_name(:title), with: '買醬油'
       fill_in Task.human_attribute_name(:content), with: '要去全聯買'
@@ -41,7 +41,7 @@ RSpec.describe "Tasks", type: :feature, js: true do
       # 為了確保測試獨立性，這裡直接 visit 編輯頁面是合規的
       # 若要測試從列表點擊進入，之後另開一個 context
       visit edit_task_path(task)
-      save_and_open_page # launchy:debug
+      en_page # launchy:debug
       fill_in Task.human_attribute_name(:title), with: '買醬油 (改)'
       click_button I18n.t('tasks.form.update')
     end
