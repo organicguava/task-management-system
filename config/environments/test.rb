@@ -18,6 +18,9 @@ Rails.application.configure do
   # Configure public file server for tests with cache-control for performance.
   config.public_file_server.headers = { "cache-control" => "public, max-age=3600" }
 
+  # 強制 Rails 在測試執行時，如果找不到預編譯檔案，就即時編譯 JS/CSS
+  config.assets.compile = true
+
   # Show full error reports.
   config.consider_all_requests_local = true
   config.cache_store = :null_store
@@ -49,5 +52,4 @@ Rails.application.configure do
   # config.action_view.annotate_rendered_view_with_filenames = true
 
   # Raise error when a before_action's only/except options reference missing actions.
-  config.action_controller.raise_on_missing_callback_actions = true
 end

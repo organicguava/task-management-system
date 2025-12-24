@@ -5,13 +5,18 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
-
   resources :tasks
   root "tasks#index"
+
+  # 註冊功能
+  # 我們只需要 new (顯示表單) 和 create (送出表單)
+  # 使用 'signup' 作為路徑名稱比較直覺
+  get "/signup", to: "users#new"
+  post "/users", to: "users#create"
+
+  # 登入/登出功能
+  # 登入是一個「建立 session」的動作，登出是「刪除 session」
+  get "/login", to: "sessions#new"
+  post "/login", to: "sessions#create"
+  delete "/logout", to: "sessions#destroy"
 end

@@ -3,13 +3,19 @@
 require 'rails_helper'
 
 RSpec.describe "Tasks", type: :feature do
+  # 設定 RSpec 的 subject 為 Capybara 的 page 物件，讓後續的 it 區塊可以直接使用 is_expected 來驗證頁面內容或狀態
   subject { page }
+
+  # 1. 建立測試使用者
+  let(:user) { create(:user) }
+
+  # 2. 全域設定：所有測試開始前，先登入
+  before { sign_in(user) }
 
   # --- 測試情境：建立任務 ---
   describe "建立任務" do
     before do
       visit new_task_path
-
       # 填寫標題與內容
       fill_in Task.human_attribute_name(:title), with: '買醬油'
       fill_in Task.human_attribute_name(:content), with: '要去全聯買'
@@ -20,20 +26,20 @@ RSpec.describe "Tasks", type: :feature do
 
       click_button I18n.t('tasks.form.submit')
     end
-
+    it { is_expected.to have_current_path(tasks_path) }
     it { is_expected.to have_content '買醬油' }
     it { is_expected.to have_content I18n.t('flash.tasks.create.notice') }
   end
 
   # --- 測試情境：修改任務 ---
   describe "修改任務" do
-    let(:task) { create(:task) }
+    # 建立任務時，指定 user: user，確保這任務屬於當前登入者
+    let(:task) { create(:task, user: user) }
 
     before do
       # 為了確保測試獨立性，這裡直接 visit 編輯頁面是合規的
       # 若要測試從列表點擊進入，之後另開一個 context
       visit edit_task_path(task)
-
       fill_in Task.human_attribute_name(:title), with: '買醬油 (改)'
       click_button I18n.t('tasks.form.update')
     end
@@ -45,7 +51,7 @@ RSpec.describe "Tasks", type: :feature do
   # --- 測試情境：刪除任務 ---
   # 加入 js: true 以支援 Turbo 的 confirm dialog 與 delete method
   describe "刪除任務", js: true do
-    let!(:task) { create(:task, title: '要被刪掉的任務') }
+    let!(:task) { create(:task, title: '要被刪掉的任務', user: user) }
 
     context "當任務存在時" do
       before { visit tasks_path }
@@ -54,14 +60,9 @@ RSpec.describe "Tasks", type: :feature do
 
       context "點擊刪除按鈕後" do
         before do
-          # --- debug 用---
-          puts "Current Locale: #{I18n.locale}"
-          puts "Translate Delete: '#{I18n.t('action.delete')}'"
-          puts "Task Title: '#{task.title}'"
-          # -----------------------
-          within find('tr', text: task.title) do # 使用 within 鎖定特定任務的列 (Row)，避免點到別人的刪除按鈕
+          within find('tr', text: task.title) do # 使用 within 鎖定特定任務的row，避免點到別人的刪除按鈕
             accept_confirm do
-              find("a[title='刪除']").click # 先暫時寫死，測試用
+              find("a[data-turbo-method='delete']").click # 避免依賴 link_to_helper 產生的文字，直接用 data 屬性定位
             end
           end
         end
@@ -74,9 +75,9 @@ RSpec.describe "Tasks", type: :feature do
 
   # --- 測試群組 1: 驗證「排序功能」 ---
   describe "任務排序 (Sorting)" do
-    # 建立不同時間點的任務
-    let!(:task_early) { create(:task, title: "舊任務", end_time: 1.day.from_now, created_at: 1.day.ago) }
-    let!(:task_late)  { create(:task, title: "新任務", end_time: 1.day.ago, created_at: Time.now) }
+    # 建立不同時間點的任務(且特別設定user:user 確保屬於同一使用者)
+    let!(:task_early) { create(:task, title: "舊任務", end_time: 1.day.from_now, created_at: 1.day.ago, user: user) }
+    let!(:task_late)  { create(:task, title: "新任務", end_time: 1.day.ago, created_at: Time.now, user: user) }
 
     context "列表預設依建立時間排序" do
       before { visit tasks_path }
@@ -103,7 +104,7 @@ RSpec.describe "Tasks", type: :feature do
   describe "分頁功能 (Pagination)" do
     before do
       # 建立 21 筆任務以觸發分頁 (Pagy 預設 10 筆)
-      create_list(:task, 21, title: "分頁測試任務")
+      create_list(:task, 21, title: "分頁測試任務", user: user)
     end
 
     context "在第一頁時" do
@@ -131,8 +132,8 @@ RSpec.describe "Tasks", type: :feature do
   # 加入 js: true 以支援 Autosubmit Controller 或模擬鍵盤輸入
   describe "搜尋功能 (Search)", js: true do
     before do
-      create(:task, title: "買蘋果", status: :pending)
-      create(:task, title: "買香蕉", status: :completed)
+      create(:task, title: "買蘋果", status: :pending, user: user)
+      create(:task, title: "買香蕉", status: :completed, user: user)
       visit tasks_path
     end
 

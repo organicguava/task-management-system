@@ -4,6 +4,7 @@ zh-TW:
   activerecord:
     models:
       task: "任務"
+      user: "使用者"
     attributes:
       task:
         title: "標題"
@@ -12,6 +13,11 @@ zh-TW:
         created_at: "建立時間"
         status: "狀態"
         priority: "優先級"
+      user:
+        name: "名稱"
+        email: "電子信箱"
+        password: "密碼"
+        password_confirmation: "確認密碼"
     enums: 
       task:
         status:
@@ -24,6 +30,21 @@ zh-TW:
           high: "高"
   
   # 2. 針對 View 或 Controller 的自訂翻譯
+  sessions:
+    new:
+      title: "登入系統"
+      register_prefix: "或是"
+      register_link: "註冊新帳號"
+      submit: "登入"
+
+  users:
+    new:
+      title: "註冊新帳號"
+      login_link: "登入現有帳號"
+      register_prefix: "或是"
+      submit: "註冊"
+      error_heading: "導致無法註冊："
+
   tasks:
     index:
       header: "任務列表"
@@ -63,6 +84,16 @@ zh-TW:
         alert: "標題不可為空"
       destroy:
         notice: "資料已刪除"
+    auth:
+      require_login: "請先登入以繼續"
+      login_failed: "帳號或密碼錯誤"
+      login: "登入成功"
+      logout: "已登出"
+    users:
+      create:
+        notice: "註冊成功！"
+
+
         
   # 4. 共用動作 (如果很多地方都用得到)
   action:

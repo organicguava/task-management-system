@@ -29,3 +29,46 @@
 
 en:
   hello: "Hello world"
+  
+  activerecord:
+    models:
+      task: "Task"
+      user: "User"
+    attributes:
+      task:
+        title: "Title"
+        content: "Content"
+        end_time: "End Time"
+        created_at: "Created At"
+        status: "Status"
+        priority: "Priority"
+      user:
+        name: "Name"
+        email: "Email"
+        password: "Password"
+        password_confirmation: "Password Confirmation"
+    enums:
+      task:
+        status:
+          pending: "Pending"
+          processing: "Processing"
+          completed: "Completed"
+        priority:
+          low: "Low"
+          medium: "Medium"
+          high: "High"
+
+  sessions:
+    new:
+      title: "Sign in to your account"
+      register_prefix: "or"
+      register_link: "Sign up for a new account"
+      submit: "Sign in"
+
+  users:
+    new:
+      title: "Sign up for a new account"
+      login_link: "Sign in to an existing account"
+      register_prefix: "or"
+      submit: "Sign up"
+      error_heading: "errors prevented registration:"

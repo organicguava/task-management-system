@@ -1,8 +1,9 @@
 class TasksController < ApplicationController
   # 將重複的程式碼抽出來，放到 private method 裡
   before_action :set_task, only: %i[edit update destroy]
+  before_action :set_task, only: %i[edit update destroy]
 
-  def index
+
 =begin
     已用ransack重構
     @tasks = Task.all
@@ -11,22 +12,13 @@ class TasksController < ApplicationController
                   .search_by_priority(params[:priority])
                   .controller_index_query(params[:sort_by], params[:direction])
 =end
-
+  def index
     # 加入 .includes(:user), 避免 N+1 查詢問題
     # 使用 reverse_merge 設定預設排序為「建立時間倒序」，避免每次都要在 view 傳參數
-    @q = Task.includes(:user).ransack(params.fetch(:q, {}).reverse_merge(s: "created_at desc"))
-
-    #  取得初步結果，distinct: true 可以避免關聯查詢時出現重複資料
-    @tasks = @q.result(distinct: true)
-
-    # 相容性處理 (保留舊有的 Table Header 排序功能)
-    # 如果網址參數有舊制的 sort_by (非 Ransack)，則覆蓋原本的排序
-    if params[:sort_by].present?
-      @tasks = @tasks.controller_index_query(params[:sort_by], params[:direction])
-    end
-
-    # 分頁設定- 使用 Pagy
-    @pagy, @tasks = pagy(@tasks, limit: 10, overflow: :last_page)
+    @q = current_user.tasks.includes(:user).ransack(params.fetch(:q, {}).reverse_merge(s: "created_at desc"))
+    # 取得初步結果，distinct: true 可以避免關聯查詢時出現重複資料
+    # 先查詢結果 -> 再分頁
+    @pagy, @tasks = pagy(@q.result(distinct: true), limit: 10, overflow: :last_page)
   end
 
   def new
@@ -34,13 +26,7 @@ class TasksController < ApplicationController
   end
 
   def create # 用來接收post(送)請求的
-    @task = Task.new(task_params)
-
-    # --- Step 19 暫時使用 (CI Friendly 版本) ---
-    # 如果找不到使用者 (CI環境)，就當場建一個，確保測試不會掛掉
-    # 等到 Step 20 做登入功能時，就會被 current_user 取代並移除
-    @task.user = User.first || User.create!(name: "Admin", email: "admin@example.com", password: "123456", password_confirmation: "123456")
-    # ----------------------------------------
+    @task = current_user.tasks.build(task_params)
 
     if @task.save
       redirect_to tasks_path, notice: t("flash.tasks.create.notice")
@@ -81,7 +67,7 @@ class TasksController < ApplicationController
 
   # edit update destroy 都有此動作，提取出來成為共用方法
   def set_task
-    @task = Task.find(params[:id])
+    @task = current_user.tasks.find(params[:id])
   end
 
   def task_params
