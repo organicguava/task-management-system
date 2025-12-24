@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe "Tasks", type: :feature, js: true do
+RSpec.describe "Tasks", type: :feature do
   # 設定 RSpec 的 subject 為 Capybara 的 page 物件，讓後續的 it 區塊可以直接使用 is_expected 來驗證頁面內容或狀態
   subject { page }
 
@@ -16,7 +16,6 @@ RSpec.describe "Tasks", type: :feature, js: true do
   describe "建立任務" do
     before do
       visit new_task_path
-      en_page # launchy:debug
       # 填寫標題與內容
       fill_in Task.human_attribute_name(:title), with: '買醬油'
       fill_in Task.human_attribute_name(:content), with: '要去全聯買'
@@ -27,7 +26,7 @@ RSpec.describe "Tasks", type: :feature, js: true do
 
       click_button I18n.t('tasks.form.submit')
     end
-
+    it { is_expected.to have_current_path(tasks_path) }
     it { is_expected.to have_content '買醬油' }
     it { is_expected.to have_content I18n.t('flash.tasks.create.notice') }
   end
@@ -41,7 +40,6 @@ RSpec.describe "Tasks", type: :feature, js: true do
       # 為了確保測試獨立性，這裡直接 visit 編輯頁面是合規的
       # 若要測試從列表點擊進入，之後另開一個 context
       visit edit_task_path(task)
-      en_page # launchy:debug
       fill_in Task.human_attribute_name(:title), with: '買醬油 (改)'
       click_button I18n.t('tasks.form.update')
     end
