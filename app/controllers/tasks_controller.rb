@@ -1,7 +1,6 @@
 class TasksController < ApplicationController
   # 將重複的程式碼抽出來，放到 private method 裡
   before_action :set_task, only: %i[edit update destroy]
-  before_action :set_task, only: %i[edit update destroy]
 
 
 =begin
@@ -29,7 +28,7 @@ class TasksController < ApplicationController
     @task = current_user.tasks.build(task_params)
 
     if @task.save
-      redirect_to tasks_path, notice: t("flash.tasks.create.notice")
+      redirect_to tasks_path, notice: t("flash.common.create.notice")
       # 將兩行合併為以上一行
       # flash[:notice] = t("flash.tasks.create.notice")
       # redirect_to tasks_path # 成功後轉跳回列表頁
@@ -48,7 +47,7 @@ class TasksController < ApplicationController
     # 嘗試更新 (使用 Strong Parameters)
     if @task.update(task_params)
       # 成功：設定 Flash 訊息並轉跳回列表
-      redirect_to tasks_path, notice: t("flash.tasks.update.notice")
+      redirect_to tasks_path, notice: t("flash.common.update.notice")
     else
       # 驗證失敗時停留在 edit 頁面並顯示錯誤訊息
       flash.now[:alert] = t("flash.tasks.update.alert")
@@ -59,7 +58,7 @@ class TasksController < ApplicationController
   def destroy
     # 如果找不到 id，Rails 會自動跳 404，這行以下都不會執行
     @task.destroy
-    redirect_to tasks_path, status: :see_other, notice: t("flash.tasks.destroy.notice")
+    redirect_to tasks_path, status: :see_other, notice: t("flash.common.destroy.notice")
     # 必須回傳 HTTP 303 (See Other) 狀態碼，否則 Turbo 有時候會報錯。
   end
 

@@ -77,13 +77,9 @@ zh-TW:
   flash:
     tasks:
       create:
-        notice: "任務已成功建立"
         alert: "標題不可為空"
       update:
-        notice: "任務更新成功"
         alert: "標題不可為空"
-      destroy:
-        notice: "資料已刪除"
     auth:
       require_login: "請先登入以繼續"
       login_failed: "帳號或密碼錯誤"
@@ -92,6 +88,21 @@ zh-TW:
     users:
       create:
         notice: "註冊成功！"
+    admin:
+      users:
+        create:
+          alert: "名稱電子信箱、或密碼不可為空"
+        update:
+          alert: "名稱或電子信箱不可為空"
+    common:
+      create:
+        notice: "建立成功"
+        alert: "建立失敗"
+      update:
+        notice: "更新成功"
+        alert: "更新失敗"
+      destroy:
+        notice: "刪除成功"
 
 
         
@@ -107,3 +118,9 @@ zh-TW:
     all: "全部狀態"
     search: "搜尋"
     actions: "操作"
+
+  # 6. 導航列
+  navbar:
+    logout: "登出"
+    admin_users: "使用者列表"
+    personal_tasks: "個人任務列表"

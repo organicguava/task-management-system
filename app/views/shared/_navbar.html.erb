@@ -34,7 +34,7 @@
             <div class="absolute right-0 mt-2 w-auto min-w-[120px] bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50 whitespace-nowrap">              <%# Logout Button %>
               <%= button_to logout_path, method: :delete, data: { testid: "logout-btn" }, class: "w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2" do %>
                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                 Logout
+                 <%= t('navbar.logout') %>
               <% end %>
             </div>
             
@@ -48,3 +48,14 @@
     </div>
   </div>
 </nav>
+
+
+<%# Tab 導航 - 放在 navbar 下方或 admin 頁面頂部 %>
+<div class="border-b border-gray-200">
+  <nav class="flex space-x-8">
+    <%= link_to t('navbar.admin_users'), admin_users_path, 
+        class: "py-4 px-1 border-b-2 #{current_page?(admin_users_path) ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}" %>
+    <%= link_to t('navbar.personal_tasks'), tasks_path,
+        class: "py-4 px-1 border-b-2 #{current_page?(tasks_path) ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}" %>
+  </nav>
+</div>

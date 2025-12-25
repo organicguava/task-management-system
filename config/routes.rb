@@ -5,7 +5,12 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  resources :tasks
+  namespace :admin do
+    resources :users do
+      resources :tasks, only: [:index]  # => /admin/users/:user_id/tasks(此寫法未來擴充CRUD功能較方便)
+    end
+  end
+
   root "tasks#index"
 
   # 註冊功能
