@@ -1,61 +1,75 @@
+<% if user_signed_in? %>
 <nav class="bg-white border-b border-gray-200">
   <div class="container mx-auto px-4">
-    <div class="flex justify-between h-16 ml-auto">
+    <div class="flex justify-between h-16">
+      <%# tab bar 或 返回鈕+使用者email %>
       <div class="flex items-center">
-        <% if user_signed_in? %> 
-          <%# --- 情境 A：已登入 (顯示頭像與下拉選單) --- %>
-          
-          <details class="relative group" id="user-menu-dropdown">
-            
-            <%# 1. user icon & name %>
-            <summary 
-              data-testid="user-menu-btn" 
-              class="flex items-center gap-3 cursor-pointer list-none focus:outline-none"
-            >
-              <%# User Avatar %>
-              <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-                <svg width="100%" height="100%" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect width="46" height="46" rx="23" fill="#9CA3AF"/>
-                  <path d="M31 32V30C31 28.9391 30.5786 27.9217 29.8284 27.1716C29.0783 26.4214 28.0609 26 27 26H19C17.9391 26 16.9217 26.4214 16.1716 27.1716C15.4214 27.9217 15 28.9391 15 30V32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M23 22C25.2091 22 27 20.2091 27 18C27 15.7909 25.2091 14 23 14C20.7909 14 19 15.7909 19 18C19 20.2091 20.7909 22 23 22Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-              <span class="text-gray-700 font-medium hidden sm:block max-w-[150px] truncate">                
-                <%= current_user.name %>
-              </span>
-
-              <%# 小箭頭 %>
-              <svg class="w-4 h-4 text-gray-500 transition-transform duration-200 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        <% if controller.controller_path == 'admin/tasks' %>
+          <%# admin/tasks/index 頁面：顯示返回鈕 + 被查看使用者的 email %>
+          <div class="flex items-center gap-3">
+            <%= link_to admin_users_path, 
+                class: "flex items-center justify-center w-8 h-8 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition duration-150",
+                title: t('admin.tasks.index.back') do %>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 12H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-            </summary>
-
-            <%# 2. 下拉內容 %>
-            <div class="absolute right-0 mt-2 w-auto min-w-[120px] bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50 whitespace-nowrap">              <%# Logout Button %>
-              <%= button_to logout_path, method: :delete, data: { testid: "logout-btn" }, class: "w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2" do %>
-                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                 <%= t('navbar.logout') %>
-              <% end %>
-            </div>
-            
-            <%# 點擊外部關閉選單 %>
-            <div class="fixed inset-0 z-40 hidden group-open:block" onclick="this.parentNode.removeAttribute('open')"></div>
-          </details>
-
+            <% end %>
+            <span class="text-gray-700 font-medium"><%= @user&.email %></span>
+          </div>
+        <% else %>
+          <%# 其他頁面：顯示 Tab 導航 %>
+          <nav class="flex space-x-1">
+            <%= link_to admin_users_path, 
+                class: "px-4 py-2 rounded-full text-sm font-medium transition duration-150 #{current_page?(admin_users_path) ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}" do %>
+              <%= t('navbar.admin_users') %>
+            <% end %>
+            <%= link_to tasks_path,
+                class: "px-4 py-2 rounded-full text-sm font-medium transition duration-150 #{current_page?(tasks_path) ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}" do %>
+              <%= t('navbar.personal_tasks') %>
+            <% end %>
+          </nav>
         <% end %>
-        
+      </div>
+
+      <%# 使用者資訊與登出 %>
+      <div class="flex items-center">
+        <details class="relative group" id="user-menu-dropdown">
+          <%# user icon & name %>
+          <summary 
+            data-testid="user-menu-btn" 
+            class="flex items-center gap-3 cursor-pointer list-none focus:outline-none"
+          >
+            <span class="text-gray-700 font-medium hidden sm:block max-w-[150px] truncate">                
+              <%= current_user.name %>
+            </span>
+            <%# User Avatar %>
+            <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+              <svg width="100%" height="100%" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="46" height="46" rx="23" fill="#9CA3AF"/>
+                <path d="M31 32V30C31 28.9391 30.5786 27.9217 29.8284 27.1716C29.0783 26.4214 28.0609 26 27 26H19C17.9391 26 16.9217 26.4214 16.1716 27.1716C15.4214 27.9217 15 28.9391 15 30V32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M23 22C25.2091 22 27 20.2091 27 18C27 15.7909 25.2091 14 23 14C20.7909 14 19 15.7909 19 18C19 20.2091 20.7909 22 23 22Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <%# 小箭頭 %>
+            <svg class="w-4 h-4 text-gray-500 transition-transform duration-200 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </summary>
+
+          <%# 下拉內容 %>
+          <div class="absolute right-0 mt-2 w-auto min-w-[120px] bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50 whitespace-nowrap">
+            <%= button_to logout_path, method: :delete, data: { testid: "logout-btn" }, class: "w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2" do %>
+               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+               <%= t('navbar.logout') %>
+            <% end %>
+          </div>
+          
+          <%# 點擊外部關閉選單 %>
+          <div class="fixed inset-0 z-40 hidden group-open:block" onclick="this.parentNode.removeAttribute('open')"></div>
+        </details>
       </div>
     </div>
   </div>
 </nav>
-
-
-<%# Tab 導航 - 放在 navbar 下方或 admin 頁面頂部 %>
-<div class="border-b border-gray-200">
-  <nav class="flex space-x-8">
-    <%= link_to t('navbar.admin_users'), admin_users_path, 
-        class: "py-4 px-1 border-b-2 #{current_page?(admin_users_path) ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}" %>
-    <%= link_to t('navbar.personal_tasks'), tasks_path,
-        class: "py-4 px-1 border-b-2 #{current_page?(tasks_path) ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}" %>
-  </nav>
-</div>
+<% end %>

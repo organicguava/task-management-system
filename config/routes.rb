@@ -11,7 +11,10 @@ Rails.application.routes.draw do
     end
   end
 
-  root "tasks#index"
+  resources :tasks
+
+  # 登入後的首頁是使用者管理列表
+  root "admin/users#index"
 
   # 註冊功能
   # 我們只需要 new (顯示表單) 和 create (送出表單)

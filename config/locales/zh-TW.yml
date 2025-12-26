@@ -18,6 +18,7 @@ zh-TW:
         email: "電子信箱"
         password: "密碼"
         password_confirmation: "確認密碼"
+        created_at: "建立時間"
     enums: 
       task:
         status:
@@ -44,6 +45,32 @@ zh-TW:
       register_prefix: "或是"
       submit: "註冊"
       error_heading: "導致無法註冊："
+
+  admin:
+    users:
+      index:
+        title: "使用者管理"
+        create_button: "新增使用者"
+        tasks_count: "任務數"
+        view_tasks: "查看任務"
+        search: "搜尋電子郵件..."
+        sorting: "排序"
+        confirm_delete: "確定要刪除使用者「%{name}」嗎？此操作會一併刪除該使用者的所有任務！"
+        no_users: "目前沒有使用者"
+      new:
+        title: "新增使用者"
+      edit:
+        title: "編輯使用者"
+      form:
+        submit: "建立"
+        update: "更新"
+        password_hint: "留空表示不修改密碼"
+    tasks:
+      index:
+        title: "%{name} 的任務列表"
+        back: "返回使用者列表"
+        no_tasks: "此使用者尚無任務"
+        viewing_user: "當前檢視使用者"
 
   tasks:
     index:
@@ -111,7 +138,9 @@ zh-TW:
     edit: "修改"
     delete: "刪除"
     show: "查看"
+    view: "檢視"
     confirm_delete: "確定要刪除任務「%{title}」嗎？"
+    view_tasks: "查看任務"
 
   # 5. 共用詞彙
   common:

@@ -23,10 +23,8 @@
 
     <div class="min-h-screen bg-gray-50 font-sans text-gray-900">
       
-      <%# 只要有登入就顯示 Navbar %>
-      <% if user_signed_in? %>
-        <%= render "shared/navbar" %>
-      <% end %>
+      <%# Navbar（內部已處理登入判斷）%>
+      <%= render "shared/navbar" %>
       
       <%= render "shared/flash" %>
 

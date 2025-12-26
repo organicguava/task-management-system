@@ -3,17 +3,10 @@ class Admin::UsersController < Admin::BaseController
   before_action :set_user, only: %i[edit update destroy]
 
   def index
-
-    # 使用SQL 計數避免 N+1 查詢問題：base_query = User.all
-    base_query = User.left_joins(:tasks)
-                  .select('users.*, COUNT(tasks.id) AS tasks_count')
-                  .group('users.id')
-
-    # 使用 reverse_merge 設定預設排序為「建立時間倒序」，避免每次都要在 view 傳參數
-    @q = base_query.ransack(params.fetch(:q, {}).reverse_merge(s: "created_at desc"))
-    # 取得初步結果，distinct: true 可以避免關聯查詢時出現重複資料
-    # 先查詢結果 -> 再分頁
-    @pagy, @users = pagy(@q.result(distinct: true), limit: 10, overflow: :last_page)
+    # 使用 Counter Cache，不再需要 JOIN 和 COUNT
+    # tasks_count 欄位已經存在於 users 表中，直接查詢即可
+    @q = User.ransack(params.fetch(:q, {}).reverse_merge(s: "created_at desc"))
+    @pagy, @users = pagy(@q.result, limit: 10, overflow: :last_page)
   end
 
   def new
