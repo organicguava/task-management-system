@@ -1,6 +1,6 @@
 class Task < ApplicationRecord
-  # 任務屬於某個使用者，因此預設就是必填
-  belongs_to :user
+  # 任務屬於某個使用者，並啟用 counter_cache 自動更新 users.tasks_count
+  belongs_to :user, counter_cache: true
   # 驗證標題必填
   validates :title, presence: true
   validates :status, presence: true

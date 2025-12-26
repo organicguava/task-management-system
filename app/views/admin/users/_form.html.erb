@@ -1,0 +1,43 @@
+
+<%= form_with(model: [:admin, @user], class: "space-y-6 bg-white p-8 rounded-lg shadow-md border border-gray-100") do |form| %>  
+    <%# 1. 使用者名稱 %>
+    <div>
+      <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+        <span class="text-red-500 mr-1">*</span><%= User.human_attribute_name(:name) %>
+        <% end %>
+      <%= form.text_field :name, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3" %>
+    </div>
+
+    <%# 2. 電子郵件欄位%>
+    <div>
+      <%= form.label :email, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+        <span class="text-red-500 mr-1">*</span><%= User.human_attribute_name(:email) %>
+        <% end %>
+      <%= form.text_field :email, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3" %>
+    </div>
+
+    <%# 3. 密碼 %>
+    <div>
+      <%= form.label :password, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+        <span class="text-red-500 mr-1">*</span><%= User.human_attribute_name(:password) %>
+        <% end %>
+      <%= form.password_field :password, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3" , placeholder: "若無需變更，此欄位請維持空白，密碼將會保持不變"%>
+    </div>
+
+    <%# 4. 密碼確認 %>
+    <div>
+      <%= form.label :password_confirmation, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+        <span class="text-red-500 mr-1">*</span><%= User.human_attribute_name(:password_confirmation) %>
+        <% end %>
+      <%= form.password_field :password_confirmation, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3" %>
+    </div>
+
+
+    <%# 5. 提交按鈕%>
+    <div class="pt-8 flex items-center justify-start mt-6">
+      <% button_text = form.object.new_record? ? t('admin.users.form.submit') : t('admin.users.form.update') %>
+      
+      <%= form.submit button_text, class: "cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition uppercase tracking-wider" %>
+    </div>
+
+<% end %>

@@ -72,3 +72,11 @@ en:
       register_prefix: "or"
       submit: "Sign up"
       error_heading: "errors prevented registration:"
+
+  admin:
+    tasks:
+      index:
+        viewing_user: "Viewing User"
+
+  action:
+    view: "View"
