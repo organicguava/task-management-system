@@ -7,7 +7,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :users do
-      resources :tasks, only: [:index]  # => /admin/users/:user_id/tasks(此寫法未來擴充CRUD功能較方便)
+      resources :tasks, only: [ :index ]  # => /admin/users/:user_id/tasks(此寫法未來擴充CRUD功能較方便)
     end
   end
 

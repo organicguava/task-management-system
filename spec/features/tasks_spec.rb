@@ -28,7 +28,7 @@ RSpec.describe "Tasks", type: :feature do
     end
     it { is_expected.to have_current_path(tasks_path) }
     it { is_expected.to have_content '買醬油' }
-    it { is_expected.to have_content I18n.t('flash.tasks.create.notice') }
+    it { is_expected.to have_content I18n.t('flash.common.create.notice') }
   end
 
   # --- 測試情境：修改任務 ---
@@ -44,7 +44,7 @@ RSpec.describe "Tasks", type: :feature do
       click_button I18n.t('tasks.form.update')
     end
 
-    it { is_expected.to have_content I18n.t('flash.tasks.update.notice') }
+    it { is_expected.to have_content I18n.t('flash.common.update.notice') }
     it { is_expected.to have_content '買醬油 (改)' }
   end
 
@@ -67,7 +67,7 @@ RSpec.describe "Tasks", type: :feature do
           end
         end
 
-        it { is_expected.to have_content I18n.t('flash.tasks.destroy.notice') }
+        it { is_expected.to have_content I18n.t('flash.common.destroy.notice') }
         it { is_expected.not_to have_content '要被刪掉的任務' }
       end
     end
@@ -129,7 +129,7 @@ RSpec.describe "Tasks", type: :feature do
   end
 
   # --- 測試群組 3: 驗證「搜尋功能」 ---
-  # 加入 js: true 以支援 Autosubmit Controller 或模擬鍵盤輸入
+  # 加入 js: true 以支援 Autosubmit Controller
   describe "搜尋功能 (Search)", js: true do
     before do
       create(:task, title: "買蘋果", status: :pending, user: user)

@@ -20,13 +20,6 @@ module LoginMacros
 
 
     click_button I18n.t("sessions.new.submit")
-    # 等待按鈕啟用 (確認 JS 有跑)
-    # expect(page).to have_button(submit_btn, disabled: false)
-
-
-    # 點擊後，必須等待頁面出現「登入成功」的訊息，才能讓方法結束。
-    # 這能防止測試程式在登入完成前就急著跳轉頁面 (visit ...)。
-    # expect(page).to have_content(I18n.t("flash.auth.login"))
   end
 
   def sign_out

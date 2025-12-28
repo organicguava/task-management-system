@@ -14,8 +14,8 @@ class Admin::UsersController < Admin::BaseController
   end
 
   def create # 用來接收post(送)請求的
-    @user = User.new(user_params)    
-    
+    @user = User.new(user_params)
+
     if @user.save
       redirect_to admin_users_path, notice: t("flash.common.create.notice")
 
@@ -31,7 +31,6 @@ class Admin::UsersController < Admin::BaseController
   end
 
   def update
-    
     # 如果密碼欄位為空，不更新密碼
     if user_params[:password].blank?
       update_params = user_params.except(:password, :password_confirmation)
