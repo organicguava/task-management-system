@@ -10,10 +10,7 @@
             <%= link_to admin_users_path, 
                 class: "flex items-center justify-center w-8 h-8 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition duration-150",
                 title: t('admin.tasks.index.back') do %>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 12H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <%= inline_svg_icon("icons/arrow-left.svg", class: "w-5 h-5") %>
             <% end %>
             <span class="text-gray-700 font-medium"><%= @user&.email %></span>
           </div>
@@ -45,22 +42,16 @@
             </span>
             <%# User Avatar %>
             <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-              <svg width="100%" height="100%" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="46" height="46" rx="23" fill="#9CA3AF"/>
-                <path d="M31 32V30C31 28.9391 30.5786 27.9217 29.8284 27.1716C29.0783 26.4214 28.0609 26 27 26H19C17.9391 26 16.9217 26.4214 16.1716 27.1716C15.4214 27.9217 15 28.9391 15 30V32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M23 22C25.2091 22 27 20.2091 27 18C27 15.7909 25.2091 14 23 14C20.7909 14 19 15.7909 19 18C19 20.2091 20.7909 22 23 22Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <%= inline_svg_icon("icons/user-avatar.svg", class: "w-full h-full") %>
             </div>
             <%# 小箭頭 %>
-            <svg class="w-4 h-4 text-gray-500 transition-transform duration-200 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
+            <%= inline_svg_icon("icons/chevron-down.svg", class: "w-4 h-4 text-gray-500 transition-transform duration-200 group-open:rotate-180") %>
           </summary>
 
           <%# 下拉內容 %>
           <div class="absolute right-0 mt-2 w-auto min-w-[120px] bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50 whitespace-nowrap">
             <%= button_to logout_path, method: :delete, data: { testid: "logout-btn" }, class: "w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2" do %>
-               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+               <%= inline_svg_icon("icons/logout.svg", class: "w-4 h-4") %>
                <%= t('navbar.logout') %>
             <% end %>
           </div>

@@ -18,13 +18,12 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # 取得過濾掉指定 filter key 的 params（保留其他篩選條件）
+
   # 用於清除按鈕，清除特定 filter 時保留其他篩選資料
   def params_without_filter(filter_key)
-    current_params = request.query_parameters.deep_dup.with_indifferent_access
-    current_params[:q]&.delete(filter_key)
-    current_params.delete(:page)
-    current_params
+    current_params = request.query_parameters.deep_dup.with_indifferent_access # 取得過濾掉指定 filter key 的 params（保留其他篩選條件）
+    current_params[:q] = current_params[:q]&.except(filter_key) # 如果 q 存在，才呼叫 except 方法, filter_key 中是要排除的欄位名稱
+    current_params.except(:page)
   end
 
   # 核心方法：從 Session 中找回目前的使用者
