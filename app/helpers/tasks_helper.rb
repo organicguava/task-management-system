@@ -16,4 +16,32 @@ module TasksHelper
         # 產生排序連結，點擊後會帶上 sort_by 參數
         link_to title, { sort_by: column }, options
     end
+
+    # 狀態標籤的樣式對應
+    STATUS_COLORS = {
+      "pending" => "bg-gray-100 text-gray-600",
+      "processing" => "bg-blue-100 text-blue-600",
+      "completed" => "bg-green-100 text-green-600"
+    }.freeze
+
+    # 優先級標籤的樣式對應
+    PRIORITY_COLORS = {
+      "low" => "bg-gray-100 text-gray-600",
+      "medium" => "bg-yellow-100 text-yellow-600",
+      "high" => "bg-red-100 text-red-600"
+    }.freeze
+
+    # 產生狀態標籤 (Badge)
+    def status_badge(status)
+      status_class = STATUS_COLORS[status] || "bg-gray-100 text-gray-600"
+      content_tag :span, t("activerecord.enums.task.status.#{status}"),
+                  class: "px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full #{status_class}"
+    end
+
+    # 產生優先級標籤 (Badge)
+    def priority_badge(priority)
+      priority_class = PRIORITY_COLORS[priority] || "bg-gray-100 text-gray-600"
+      content_tag :span, t("activerecord.enums.task.priority.#{priority}"),
+                  class: "px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full #{priority_class}"
+    end
 end

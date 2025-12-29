@@ -1,8 +1,8 @@
 <div class="container mx-auto px-4 py-8">
-  <%= turbo_frame_tag "tasks_list", data: { turbo_action: "advance" } do %>
+  <%= turbo_frame_tag "admin_tasks_list", data: { turbo_action: "advance" } do %>
     <div class="mb-6">
       <%# 表單連結autosubmit controller 做「一更改資料就自動提交」 %>
-      <%= search_form_for @q, url: tasks_path, method: :get, data: { controller: "autosubmit", turbo_frame: "tasks_list" },class: "flex flex-col sm:flex-row justify-between items-center gap-4" do |f| %>
+      <%= search_form_for @q, url: admin_user_tasks_path(@user), method: :get, data: { controller: "autosubmit", turbo_frame: "admin_tasks_list" },class: "flex flex-col sm:flex-row justify-between items-center gap-4" do |f| %>
         
         <div class="flex flex-1 items-center gap-3 w-full sm:w-auto">
           <%# --- A. 搜尋框 --- %>
@@ -11,45 +11,18 @@
               <%= inline_svg_icon("icons/search.svg", class: "h-5 w-5 text-gray-400") %>
             </div>
             <%= f.search_field :title_cont, 
-                placeholder: t('tasks.index.search'), 
+                placeholder: t('tasks.index.search'),
                 data: { action: "input->autosubmit#search" },              
                 class: "pl-10 block w-full rounded-full border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 [&::-webkit-search-cancel-button]:hidden" %>
 
             <%# search title filter篩選邏輯 %>      
             <% if params.dig(:q, :title_cont).present? %>
               <%# search title filter中的清除按鈕 %> 
-              <%= link_to tasks_path(params_without_filter(:title_cont)), class: "absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600" do %>
+              <%= link_to admin_user_tasks_path(@user, params_without_filter(:title_cont)), class: "absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600" do %>
                 <%= inline_svg_icon("icons/x-mark.svg", class: "h-5 w-5") %>
               <% end %>
             <% end %>
 
-          </div>
-
-          <%# priority filter 篩選邏輯 %>
-          <div class="relative">
-              <%= f.select :priority_eq, 
-              Task.priorities.map { |k, v| [t("activerecord.enums.task.priority.#{k}"), v] }, 
-              { include_blank: Task.human_attribute_name(:priority) },
-              class: "appearance-none block w-full pl-4 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-full bg-white text-gray-700 cursor-pointer hover:bg-gray-50 transition",
-              data: { action: "change->autosubmit#search" } %> 
-              <%# autosubmit_controller.js會監聽change事件，來判斷要不要送出field 中資料 %>
-            
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-              <%= inline_svg_icon("icons/chevron-down.svg", class: "h-4 w-4") %>
-            </div>
-          </div>
-
-          <%# status filter 篩選邏輯 %>
-          <div class="relative">
-            <%= f.select :status_eq, 
-              Task.statuses.map { |k, v| [t("activerecord.enums.task.status.#{k}"), v] }, 
-              { include_blank: Task.human_attribute_name(:status) }, 
-              class: "appearance-none block w-full pl-4 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-full bg-white text-gray-700 cursor-pointer hover:bg-gray-50 transition",
-              data: { action: "change->autosubmit#search" } %>
-              
-              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                <%= inline_svg_icon("icons/chevron-down.svg", class: "h-4 w-4") %>
-              </div>
           </div>
 
           <%= f.submit "Filter", class: "hidden" %> <%# 因為移除了原本UI中的搜尋與重置按鈕，改成隱藏的提交按鈕，由autosubmit controller觸發時執行原本觸發按鈕的行為 %>
@@ -71,15 +44,6 @@
               </div>
             </div>
           </div>
-          <%# 新增任務按鈕 %>
-          <%= link_to new_task_path, 
-            { 
-              class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition",
-              data: { turbo_frame: "_top" }
-            } do %> <%# 若沒有此行，Turbo 預設會期待伺服器回傳的 new 頁面裡也要包含一個 <turbo-frame id="tasks_list"> 來替換內容 %>
-            <%= inline_svg_icon("icons/plus.svg", class: "-ml-1 mr-2 h-5 w-5") %>
-            <%= t('tasks.index.create_button') %>
-          <% end %>
 
         </div>
       <% end %>
@@ -147,24 +111,12 @@
                 <%# 6. 操作按鈕  %>
                 <td class="px-5 py-4 text-right">
                   <div class="flex items-center justify-end space-x-3">
-                    <%# 編輯按鈕 Icon %>
-                    <%= link_to edit_task_path(task), 
-                        class: "text-gray-400 hover:text-indigo-600 transition duration-150", 
-                        title: t('action.edit'),
-                        data: { turbo_frame: "_top" } do %>
-                      <%= inline_svg_icon("icons/pencil.svg", class: "h-5 w-5") %>
-                    <% end %>
-                    
-                    <%# 刪除按鈕 Icon %>
+                    <%# 檢視按鈕 Icon %>
                     <%= link_to task_path(task), 
-                        data: { 
-                          turbo_method: :delete, 
-                          turbo_confirm: t('action.confirm_delete', title: task.title),
-                          turbo_frame: "_top"
-                        }, 
-                        class: "text-gray-400 hover:text-red-600 transition duration-150",
-                        title: t('action.delete') do %>
-                      <%= inline_svg_icon("icons/trash.svg", class: "h-5 w-5") %>
+                        class: "text-gray-400 hover:text-blue-600 transition duration-150", 
+                        title: t('action.view'),
+                        data: { turbo_frame: "_top" } do %>
+                      <%= inline_svg_icon("icons/eye.svg", class: "h-5 w-5") %>
                     <% end %>
                   </div>
                 </td>
