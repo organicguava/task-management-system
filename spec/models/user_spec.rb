@@ -2,14 +2,14 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   describe "驗證" do
-    it { should validate_presence_of(:email) }
-    it { should validate_uniqueness_of(:email) }
-    it { should have_secure_password }
+    it { is_expected.to validate_presence_of(:email) }
+    it { is_expected.to validate_uniqueness_of(:email) }
+    it { is_expected.to have_secure_password }
   end
 
 
   describe "關聯" do
-    it { should have_many(:tasks).dependent(:destroy) }
+    it { is_expected.to have_many(:tasks).dependent(:destroy) }
   end
 
 

@@ -30,11 +30,11 @@ RSpec.describe "Admin::Tasks", type: :feature do
     end
 
     # 顯示該使用者的任務
-    it { is_expected.to have_content "Task Alpha" }
-    it { is_expected.to have_content "Task Beta" }
+    it { is_expected.to have_content task1.title }
+    it { is_expected.to have_content task2.title }
 
     # 不顯示其他使用者的任務
-    it { is_expected.not_to have_content "Admin Task" }
+    it { is_expected.not_to have_content admin_task.title }
 
     # 只有檢視按鈕，沒有編輯和刪除按鈕
     it "只有檢視按鈕" do

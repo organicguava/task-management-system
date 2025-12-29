@@ -19,15 +19,8 @@
 
             <%# search title filter篩選邏輯 %>      
             <% if params[:q] && params[:q][:title_cont].present? %>
-              <%# 確保search filter取消選取時，其他filter的篩選資料還在%>
-              <%# 加入indifferent_access,current_params[:q] 才能正確抓到 request.query_parameters["q"] 的資料%>
-              <%  
-              current_params = request.query_parameters.deep_dup.with_indifferent_access
-              current_params[:q]&.delete(:title_cont)
-              current_params.delete(:page)
-              %>
               <%# search title filter中的清除按鈕 %> 
-              <%= link_to admin_user_tasks_path(@user, current_params), class: "absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600" do %>
+              <%= link_to admin_user_tasks_path(@user, params_without_filter(:title_cont)), class: "absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600" do %>
                 <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
               <% end %>
             <% end %>
@@ -103,32 +96,12 @@
 
                 <%# 3. 狀態 (彩色標籤 Badge) %>
                 <td class="px-5 py-4">
-                  <% 
-                    status_colors = {
-                      'pending' => 'bg-gray-100 text-gray-600',
-                      'processing' => 'bg-blue-100 text-blue-600',
-                      'completed' => 'bg-green-100 text-green-600'
-                    }
-                    status_class = status_colors[task.status] || 'bg-gray-100 text-gray-600'
-                  %>
-                  <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full <%= status_class %>">
-                    <%= t("activerecord.enums.task.status.#{task.status}") %>
-                  </span>
+                  <%= status_badge(task.status) %>
                 </td>
 
                 <%# 4. 優先級 (彩色標籤 Badge) %>
                 <td class="px-5 py-4">
-                  <% 
-                    priority_colors = {
-                      'low' => 'bg-gray-100 text-gray-600',
-                      'medium' => 'bg-yellow-100 text-yellow-600',
-                      'high' => 'bg-red-100 text-red-600'
-                    }
-                    priority_class = priority_colors[task.priority] || 'bg-gray-100 text-gray-600'
-                  %>
-                  <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full <%= priority_class %>">
-                    <%= t("activerecord.enums.task.priority.#{task.priority}") rescue task.priority %>
-                  </span>
+                  <%= priority_badge(task.priority) %>
                 </td>
 
                 <%# 5. 結束時間 %>
@@ -145,10 +118,7 @@
                         class: "text-gray-400 hover:text-blue-600 transition duration-150", 
                         title: t('action.view'),
                         data: { turbo_frame: "_top" } do %>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                      </svg>
+                      <%= inline_svg_icon("icons/eye.svg", class: "h-5 w-5") %>
                     <% end %>
                   </div>
                 </td>

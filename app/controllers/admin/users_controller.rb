@@ -31,13 +31,6 @@ class Admin::UsersController < Admin::BaseController
   end
 
   def update
-    # 如果密碼欄位為空，不更新密碼
-    if user_params[:password].blank?
-      update_params = user_params.except(:password, :password_confirmation)
-    else
-      update_params = user_params
-    end
-
     # 嘗試更新 (使用 Strong Parameters)
     if @user.update(update_params)
       # 成功：設定 Flash 訊息並轉跳回列表
@@ -65,5 +58,10 @@ class Admin::UsersController < Admin::BaseController
 
   def user_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation)
+  end
+
+  # 使用 delete_if 刪除空的密碼欄位，密碼若在編輯時沒有更新就不會被改變
+  def update_params
+    user_params.to_h.delete_if { |key, value| key.in?(%w[password password_confirmation]) && value.blank? }
   end
 end

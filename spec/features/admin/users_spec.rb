@@ -161,10 +161,8 @@ RSpec.describe "Admin::Users", type: :feature do
     end
 
     context "依任務數排序" do
-      let!(:task1) { create(:task, user: user_old) }
-      let!(:task2) { create(:task, user: user_old) }
-      let!(:task3) { create(:task, user: user_old) }
-      let!(:task4) { create(:task, user: user_new) }
+      let!(:tasks_for_old_user) { create_list(:task, 3, user: user_old) }
+      let!(:task_for_new_user) { create(:task, user: user_new) }
 
       before do
         visit admin_users_path

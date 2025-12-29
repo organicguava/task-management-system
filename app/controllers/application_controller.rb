@@ -12,11 +12,20 @@ class ApplicationController < ActionController::Base
   include Pagy::Backend
 
   # 讓 View 也可以使用這些 controller 的 helper 方法(讓 View 也可以像呼叫 link_to 或 form_with 這些 Helper 一樣呼叫)
-  helper_method :current_user, :user_signed_in?
+  helper_method :current_user, :user_signed_in?, :params_without_filter
 
   before_action :authenticate_user! # 預設所有頁面都要驗證使用者身份，在 SessionsController 和 UsersController 裡面會跳過這個驗證
 
   private
+
+  # 取得過濾掉指定 filter key 的 params（保留其他篩選條件）
+  # 用於清除按鈕，清除特定 filter 時保留其他篩選資料
+  def params_without_filter(filter_key)
+    current_params = request.query_parameters.deep_dup.with_indifferent_access
+    current_params[:q]&.delete(filter_key)
+    current_params.delete(:page)
+    current_params
+  end
 
   # 核心方法：從 Session 中找回目前的使用者
   # Memoization (@current_user ||= ...) 確保一個 Request 只查一次資料庫
