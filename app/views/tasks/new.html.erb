@@ -1,3 +1,5 @@
+<% content_for :hide_navbar, true %>
+
 <div class="max-w-4xl mx-auto mt-10 px-4">
   <%= render "shared/page_header", title: t('tasks.new.title'), back_path: tasks_path %>
   <%= render "form", task: @task %>
