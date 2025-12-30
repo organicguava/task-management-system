@@ -72,9 +72,6 @@
               <th class="px-5 py-3 cursor-pointer">
                 <%= sort_link @q, :end_time, Task.human_attribute_name(:end_time), class: "hover:text-gray-900 flex items-center" %>
               </th>
-              <th class="px-5 py-3 text-right">
-                <%= t('common.actions') %> 
-              </th>
             </tr>
           </thead>
 
@@ -106,19 +103,6 @@
                 <td class="px-5 py-4 text-gray-500">
                   <%# 使用 l (localize) 方法格式化時間，如果時間是 nil 則不顯示 %>
                   <%= l(task.end_time, format: :short) if task.end_time.present? %>
-                </td>
-
-                <%# 6. 操作按鈕  %>
-                <td class="px-5 py-4 text-right">
-                  <div class="flex items-center justify-end space-x-3">
-                    <%# 檢視按鈕 Icon %>
-                    <%= link_to task_path(task), 
-                        class: "text-gray-400 hover:text-blue-600 transition duration-150", 
-                        title: t('action.view'),
-                        data: { turbo_frame: "_top" } do %>
-                      <%= inline_svg_icon("icons/eye.svg", class: "h-5 w-5") %>
-                    <% end %>
-                  </div>
                 </td>
               </tr>
             <% end %>

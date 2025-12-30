@@ -24,7 +24,8 @@
     <div class="min-h-screen bg-gray-50 font-sans text-gray-900">
       
       <%# Navbar（內部已處理登入判斷）%>
-      <%= render "shared/navbar" %>
+      <%# 使用 content_for(:hide_navbar, true) 可以在特定頁面隱藏 navbar %>
+      <%= render "shared/navbar" unless content_for?(:hide_navbar) %>
       
       <%= render "shared/flash" %>
 

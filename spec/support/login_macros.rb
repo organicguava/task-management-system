@@ -1,13 +1,12 @@
 module LoginMacros
-  def sign_in(user)
+  # Factory 中定義的固定密碼，避免依賴 user.password（has_secure_password 會清空明碼）
+  DEFAULT_PASSWORD = "123456".freeze
+
+  def sign_in(user, password: DEFAULT_PASSWORD)
     visit login_path
     fill_in User.human_attribute_name(:email), with: user.email
-    fill_in User.human_attribute_name(:password), with: user.password
+    fill_in User.human_attribute_name(:password), with: password
 
-    # 此行用意為："等" Stimulus controller 跑完驗證並移除 disabled 屬性, 避免測試過快點擊到還沒啟用的按鈕
-    # expect(page).to have_button(I18n.t("sessions.new.submit"), disabled: false)
-
-    # 安全點擊
     click_button I18n.t("sessions.new.submit")
     expect(page).to have_content(I18n.t("flash.auth.login"))
   end

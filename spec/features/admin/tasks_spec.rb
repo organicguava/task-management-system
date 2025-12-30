@@ -35,16 +35,6 @@ RSpec.describe "Admin::Tasks", type: :feature do
 
     # 不顯示其他使用者的任務
     it { is_expected.not_to have_content admin_task.title }
-
-    # 只有檢視按鈕，沒有編輯和刪除按鈕
-    it "只有檢視按鈕" do
-      within find('tr', text: task1.title) do
-        # 應該有檢視按鈕
-        expect(page).to have_link(href: task_path(task1))
-        # 不應該有刪除按鈕
-        expect(page).not_to have_css("a[data-turbo-method='delete']")
-      end
-    end
   end
 
   # --- 測試情境：返回按鈕 ---
