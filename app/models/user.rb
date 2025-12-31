@@ -7,6 +7,9 @@ class User < ApplicationRecord
   # 呼叫內部方法- ensure_admin_remains，防止刪除最後一位管理員
   before_destroy :ensure_admin_remains
 
+  # 呼叫內部方法- prevent_last_admin_demotion，防止將最後一位管理員降級, 造成無管理員狀態
+  before_update :prevent_last_admin_demotion
+
   # 刪除使用者時，連帶刪除其任務，避免產生孤兒資料
   has_many :tasks, dependent: :destroy
 
@@ -34,4 +37,19 @@ class User < ApplicationRecord
       throw :abort
     end
   end
+
+  # 防止最後一個管理員被降級
+  def prevent_last_admin_demotion
+    # 檢查條件：
+    # 1. admin 欄位有變更 (從 true 變成 false)
+    # 2. 變更前是 admin
+    # 3. 是最後一個 admin
+    if admin_changed? && admin_was == true && admin == false
+      if User.where(admin: true).count == 1
+        errors.add(:base, :last_admin_demotion)
+        throw :abort
+      end
+    end
+  end
+
 end

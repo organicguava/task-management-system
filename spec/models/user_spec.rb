@@ -97,4 +97,30 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe "before_update callback (防止最後一位管理員降級)" do
+    context "當只剩一位管理員嘗試降級自己" do
+      let!(:last_admin) { create(:user, :admin) }
+
+      it "無法降級" do
+        expect(last_admin.update(admin: false)).to be false
+      end
+
+      it "新增錯誤訊息" do
+        last_admin.update(admin: false)
+        expect(last_admin.errors[:base]).to include(
+          I18n.t("activerecord.errors.models.user.attributes.base.last_admin_demotion")
+        )
+      end
+    end
+
+    context "當有多位管理員" do
+      let!(:admin1) { create(:user, :admin) }
+      let!(:admin2) { create(:user, :admin) }
+
+      it "可以降級其中一位" do
+        expect(admin1.update(admin: false)).to be true
+      end
+    end
+  end
 end

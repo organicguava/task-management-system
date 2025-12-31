@@ -36,6 +36,7 @@ zh-TW:
           attributes:
             base:
               last_admin: "無法刪除最後一位管理員"
+              last_admin_demotion: "無法將最後一位管理員降級為一般使用者"
   
   # 2. 針對 View 或 Controller 的自訂翻譯
   sessions:
