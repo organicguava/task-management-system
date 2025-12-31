@@ -21,7 +21,7 @@
       <%= form.label :admin, class: "block text-sm font-medium text-gray-700 mb-1" do %>
         <span class="text-red-500 mr-1">*</span><%= User.human_attribute_name(:admin) %>
         <% end %>
-      <%= form.select :admin, [["是", true], ["否", false]], {}, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3" %>
+      <%= form.select :admin, [[t('admin.users.index.if_admin_yes'), true], [t('admin.users.index.if_admin_no'), false]], {}, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3" %>
     </div>
 
     <%# 密碼 %>
@@ -29,7 +29,7 @@
       <%= form.label :password, class: "block text-sm font-medium text-gray-700 mb-1" do %>
         <span class="text-red-500 mr-1">*</span><%= User.human_attribute_name(:password) %>
         <% end %>
-      <%= form.password_field :password, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3" , placeholder: "若無需變更，此欄位請維持空白，密碼將會保持不變"%>
+      <%= form.password_field :password, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3", placeholder: t('admin.users.form.password_hint') %>
     </div>
 
     <%# 密碼確認 %>

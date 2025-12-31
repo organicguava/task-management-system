@@ -58,7 +58,7 @@ class TasksController < ApplicationController
   def destroy
     # 如果找不到 id，Rails 會自動跳 404，這行以下都不會執行
     @task.destroy
-    redirect_to tasks_path, status: :see_other, notice: t("flash.common.destroy.notice")
+    redirect_back_or_to tasks_path, status: :see_other, notice: t("flash.common.destroy.notice")
     # 必須回傳 HTTP 303 (See Other) 狀態碼，否則 Turbo 有時候會報錯。
   end
 

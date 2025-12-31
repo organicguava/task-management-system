@@ -42,13 +42,13 @@ class Admin::UsersController < Admin::BaseController
     end
   end
 
-  def destroy # 如果找不到 id，Rails 會自動跳 404，不會執行destroy
-    # 若處理刪除失敗，顯示錯誤訊息
+  def destroy
     if @user.destroy
-      redirect_to admin_users_path, status: :see_other, notice: t("flash.common.destroy.notice") # 必須回傳 HTTP 303 (See Other) 狀態碼，否則 Turbo 有時候會報錯。
+      flash[:notice] = t("flash.common.destroy.notice")
     else
-      redirect_to admin_users_path, status: :see_other, alert: @user.errors.full_messages.to_sentence
+      flash[:alert] = @user.errors.full_messages.to_sentence
     end
+    redirect_back_or_to admin_users_path, status: :see_other
   end
 
   private # 為了安全性，必須使用 Strong Parameters
