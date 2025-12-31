@@ -14,6 +14,7 @@ zh-TW:
         status: "狀態"
         priority: "優先級"
       user:
+        admin: "管理員"
         name: "名稱"
         email: "電子信箱"
         password: "密碼"
@@ -29,6 +30,12 @@ zh-TW:
           low: "低"
           medium: "中"
           high: "高"
+    errors:
+      models:
+        user:
+          attributes:
+            base:
+              last_admin: "無法刪除最後一位管理員"
   
   # 2. 針對 View 或 Controller 的自訂翻譯
   sessions:
@@ -48,15 +55,16 @@ zh-TW:
 
   admin:
     users:
-      index:
-        title: "使用者管理"
+      index:        
         create_button: "新增使用者"
         tasks_count: "任務數"
         view_tasks: "查看任務"
         search: "搜尋電子郵件..."
         sorting: "排序"
-        confirm_delete: "確定要刪除使用者「%{name}」嗎？此操作會一併刪除該使用者的所有任務！"
+        confirm_delete: "確定要刪除使用者「%{name}」嗎？\n此操作會一併刪除該使用者的所有任務！"
         no_users: "目前沒有使用者"
+        if_admin_yes: "是"
+        if_admin_no: "否"
       new:
         title: "新增使用者"
       edit:
@@ -71,6 +79,7 @@ zh-TW:
         back: "返回使用者列表"
         no_tasks: "此使用者尚無任務"
         viewing_user: "當前檢視使用者"
+      
 
   tasks:
     index:

@@ -6,7 +6,7 @@ RSpec.describe "Admin::Tasks", type: :feature do
   subject { page }
 
   # 建立測試使用者（管理員）
-  let(:admin) { create(:user, name: "Admin", email: "admin@example.com") }
+  let(:admin) { create(:user, :admin, name: "Admin", email: "admin@example.com") }
 
   # 建立被查看任務的使用者
   let(:target_user) { create(:user, name: "Target User", email: "target@example.com") }
@@ -16,9 +16,9 @@ RSpec.describe "Admin::Tasks", type: :feature do
 
   # --- 測試情境：查看使用者任務列表 ---
   describe "查看使用者任務列表" do
-    let!(:task1) { create(:task, title: "Task Alpha", content: "Content A", user: target_user, priority: :high, status: :pending) }
-    let!(:task2) { create(:task, title: "Task Beta", content: "Content B", user: target_user, priority: :low, status: :completed) }
-    let!(:admin_task) { create(:task, title: "Admin Task", user: admin) }
+    let!(:task1) { create(:task, user: target_user, priority: :high, status: :pending) }
+    let!(:task2) { create(:task, user: target_user, priority: :low, status: :completed) }
+    let!(:admin_task) { create(:task, user: admin) }
 
     before { visit admin_user_tasks_path(target_user) }
 
@@ -61,25 +61,25 @@ RSpec.describe "Admin::Tasks", type: :feature do
         fill_in "q_title_cont", with: "Apple\n"
       end
 
-      it { is_expected.to have_content "Buy Apple" }
-      it { is_expected.not_to have_content "Buy Banana" }
+      it { is_expected.to have_content task_apple.title }
+      it { is_expected.not_to have_content task_banana.title }
     end
   end
 
   # --- 測試情境：排序功能 ---
   describe "排序功能" do
-    let!(:task_old) { create(:task, title: "Old Task", user: target_user, created_at: 2.days.ago) }
-    let!(:task_new) { create(:task, title: "New Task", user: target_user, created_at: 1.hour.ago) }
+    let!(:task_old) { create(:task, user: target_user, created_at: 2.days.ago) }
+    let!(:task_new) { create(:task, user: target_user, created_at: 1.hour.ago) }
 
     context "預設依建立時間倒序" do
       before { visit admin_user_tasks_path(target_user) }
 
-      it { is_expected.to have_content(/New Task.*Old Task/m) }
+      it { is_expected.to have_content(/#{task_new.title}.*#{task_old.title}/m) }
     end
 
     context "依優先級排序" do
-      let!(:task_high) { create(:task, title: "High Priority", user: target_user, priority: :high) }
-      let!(:task_low) { create(:task, title: "Low Priority", user: target_user, priority: :low) }
+      let!(:task_high) { create(:task, user: target_user, priority: :high) }
+      let!(:task_low) { create(:task, user: target_user, priority: :low) }
 
       before do
         visit admin_user_tasks_path(target_user)
@@ -89,7 +89,7 @@ RSpec.describe "Admin::Tasks", type: :feature do
       end
 
       # 點擊後應該有排序效果（升序：low 在前）
-      it { is_expected.to have_content(/Low Priority.*High Priority/m) }
+      it { is_expected.to have_content(/#{task_low.title}.*#{task_high.title}/m) }
     end
   end
 end

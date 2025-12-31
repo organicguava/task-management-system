@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe "Admin::Tasks", type: :request do
-  let(:admin) { create(:user) }
+  let(:admin) { create(:user, :admin) }
   let(:target_user) { create(:user) }
 
   # 模擬登入

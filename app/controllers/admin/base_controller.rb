@@ -4,6 +4,6 @@ class Admin::BaseController < ApplicationController
   private
 
   def require_admin!
-    # 步驟 22 會實作角色功能
+    redirect_to root_path unless current_user&.admin?
   end
 end

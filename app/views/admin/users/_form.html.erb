@@ -1,6 +1,6 @@
 
 <%= form_with(model: [:admin, @user], class: "space-y-6 bg-white p-8 rounded-lg shadow-md border border-gray-100") do |form| %>  
-    <%# 1. 使用者名稱 %>
+    <%# 使用者名稱 %>
     <div>
       <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1" do %>
         <span class="text-red-500 mr-1">*</span><%= User.human_attribute_name(:name) %>
@@ -8,7 +8,7 @@
       <%= form.text_field :name, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3" %>
     </div>
 
-    <%# 2. 電子郵件欄位%>
+    <%# 電子郵件欄位%>
     <div>
       <%= form.label :email, class: "block text-sm font-medium text-gray-700 mb-1" do %>
         <span class="text-red-500 mr-1">*</span><%= User.human_attribute_name(:email) %>
@@ -16,15 +16,23 @@
       <%= form.text_field :email, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3" %>
     </div>
 
-    <%# 3. 密碼 %>
+    <%# 是否為管理員 %>
+    <div>
+      <%= form.label :admin, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+        <span class="text-red-500 mr-1">*</span><%= User.human_attribute_name(:admin) %>
+        <% end %>
+      <%= form.select :admin, [[t('admin.users.index.if_admin_yes'), true], [t('admin.users.index.if_admin_no'), false]], {}, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3" %>
+    </div>
+
+    <%# 密碼 %>
     <div>
       <%= form.label :password, class: "block text-sm font-medium text-gray-700 mb-1" do %>
         <span class="text-red-500 mr-1">*</span><%= User.human_attribute_name(:password) %>
         <% end %>
-      <%= form.password_field :password, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3" , placeholder: "若無需變更，此欄位請維持空白，密碼將會保持不變"%>
+      <%= form.password_field :password, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm placeholder-gray-400 py-3", placeholder: t('admin.users.form.password_hint') %>
     </div>
 
-    <%# 4. 密碼確認 %>
+    <%# 密碼確認 %>
     <div>
       <%= form.label :password_confirmation, class: "block text-sm font-medium text-gray-700 mb-1" do %>
         <span class="text-red-500 mr-1">*</span><%= User.human_attribute_name(:password_confirmation) %>
@@ -33,7 +41,7 @@
     </div>
 
 
-    <%# 5. 提交按鈕%>
+    <%# 提交按鈕%>
     <div class="pt-8 flex items-center justify-start mt-6">
       <% button_text = form.object.new_record? ? t('admin.users.form.submit') : t('admin.users.form.update') %>
       

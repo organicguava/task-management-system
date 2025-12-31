@@ -16,16 +16,18 @@
           </div>
         <% else %>
           <%# 其他頁面：顯示 Tab 導航 %>
-          <nav class="flex space-x-1">
-            <%= link_to admin_users_path, 
-                class: "px-4 py-2 rounded-full text-sm font-medium transition duration-150 #{current_page?(admin_users_path) ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}" do %>
-              <%= t('navbar.admin_users') %>
-            <% end %>
-            <%= link_to tasks_path,
-                class: "px-4 py-2 rounded-full text-sm font-medium transition duration-150 #{current_page?(tasks_path) ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}" do %>
-              <%= t('navbar.personal_tasks') %>
-            <% end %>
-          </nav>
+          <% if current_user.admin? %>
+            <nav class="flex space-x-1">
+              <%= link_to admin_users_path, 
+                  class: "px-4 py-2 rounded-full text-sm font-medium transition duration-150 #{current_page?(admin_users_path) ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}" do %>
+                <%= t('navbar.admin_users') %>
+              <% end %>
+              <%= link_to tasks_path,
+                  class: "px-4 py-2 rounded-full text-sm font-medium transition duration-150 #{current_page?(tasks_path) ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}" do %>
+                <%= t('navbar.personal_tasks') %>
+              <% end %>
+            </nav>
+          <% end %>
         <% end %>
       </div>
 

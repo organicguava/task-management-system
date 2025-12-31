@@ -70,6 +70,9 @@
                 <%= sort_link @q, :email, User.human_attribute_name(:email), class: "hover:text-gray-900 flex items-center" %>
               </th>
               <th class="px-5 py-3">
+                <%= sort_link @q, :admin, User.human_attribute_name(:admin), class: "hover:text-gray-900 flex items-center" %>
+              </th>
+              <th class="px-5 py-3">
                 <%= sort_link @q, :created_at, User.human_attribute_name(:created_at), class: "hover:text-gray-900 flex items-center" %>
               </th>
               <th class="px-5 py-3">
@@ -93,29 +96,42 @@
               <% @users.each do |user| %>
                 <tr class="border-b border-gray-200 hover:bg-gray-50 transition duration-150 ease-in-out">
                   
-                  <%# 1. 名稱 %>
+                  <%# 名稱 %>
                   <td class="px-5 py-4">
                     <p class="font-medium text-gray-900 truncate max-w-[12rem]"><%= user.name %></p>
                   </td>
 
-                  <%# 2. 電子郵件 %>
+                  <%# 電子郵件 %>
                   <td class="px-5 py-4">
                     <p class="text-gray-500 truncate max-w-[16rem]"><%= user.email %></p>
                   </td>
 
-                  <%# 3. 建立時間 %>
+                  <%# 是否為管理員 %>
+                  <td class="px-5 py-4">
+                    <% if user.admin? %>
+                      <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-600">
+                        <%= t('admin.users.index.if_admin_yes') %>
+                      </span>
+                    <% else %>
+                      <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-600">
+                        <%= t('admin.users.index.if_admin_no') %>
+                      </span>
+                    <% end %>
+                  </td>
+
+                  <%# 建立時間 %>
                   <td class="px-5 py-4 text-gray-500">
                     <%= l(user.created_at, format: :short) %>
                   </td>
 
-                  <%# 4. 任務數 %>
+                  <%# 任務數 %>
                   <td class="px-5 py-4">
                     <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-600">
                       <%= user.tasks_count %>
                     </span>
                   </td>
 
-                  <%# 5. 操作按鈕 %>
+                  <%# 操作按鈕 %>
                   <td class="px-5 py-4 text-right">
                     <div class="flex items-center justify-end space-x-3">
                       <%# 查看任務按鈕 %>

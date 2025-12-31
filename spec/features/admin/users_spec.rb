@@ -6,22 +6,22 @@ RSpec.describe "Admin::Users", type: :feature do
   subject { page }
 
   # 建立測試使用者（管理員）
-  let(:admin) { create(:user, name: "Admin", email: "admin@example.com") }
+  let(:admin) { create(:user, :admin, name: "Admin", email: "admin@example.com") }
 
   # 全域設定：所有測試開始前，先登入
   before { sign_in(admin) }
 
   # --- 測試情境：使用者列表 ---
   describe "使用者列表" do
-    let!(:user1) { create(:user, name: "User One", email: "one@example.com") }
-    let!(:user2) { create(:user, name: "User Two", email: "two@example.com") }
+    let!(:user1) { create(:user) }
+    let!(:user2) { create(:user) }
 
     before { visit admin_users_path }
 
-    it { is_expected.to have_content "User One" }
-    it { is_expected.to have_content "User Two" }
-    it { is_expected.to have_content "one@example.com" }
-    it { is_expected.to have_content "two@example.com" }
+    it { is_expected.to have_content user1.name }
+    it { is_expected.to have_content user2.name }
+    it { is_expected.to have_content user1.email }
+    it { is_expected.to have_content user2.email }
 
     context "顯示任務數量" do
       let!(:task1) { create(:task, user: user1) }
@@ -100,11 +100,11 @@ RSpec.describe "Admin::Users", type: :feature do
 
   # --- 測試情境：刪除使用者 ---
   describe "刪除使用者", js: true do
-    let!(:target_user) { create(:user, name: "To Be Deleted") }
+    let!(:target_user) { create(:user) }
 
     before { visit admin_users_path }
 
-    it { is_expected.to have_content "To Be Deleted" }
+    it { is_expected.to have_content target_user.name }
 
     context "點擊刪除按鈕後" do
       before do
@@ -116,16 +116,16 @@ RSpec.describe "Admin::Users", type: :feature do
       end
 
       it { is_expected.to have_content I18n.t("flash.common.destroy.notice") }
-      it { is_expected.not_to have_content "To Be Deleted" }
+      it { is_expected.not_to have_content target_user.name }
     end
   end
 
   # --- 測試情境：查看使用者的任務列表 ---
   describe "查看使用者的任務列表" do
-    let!(:target_user) { create(:user, name: "Task Owner", email: "taskowner@example.com") }
-    let!(:task1) { create(:task, title: "Owner Task 1", user: target_user) }
-    let!(:task2) { create(:task, title: "Owner Task 2", user: target_user) }
-    let!(:other_task) { create(:task, title: "Other Task", user: admin) }
+    let!(:target_user) { create(:user) }
+    let!(:task1) { create(:task, user: target_user) }
+    let!(:task2) { create(:task, user: target_user) }
+    let!(:other_task) { create(:task, user: admin) }
 
     before do
       visit admin_users_path
@@ -139,14 +139,14 @@ RSpec.describe "Admin::Users", type: :feature do
     it { is_expected.to have_current_path admin_user_tasks_path(target_user) }
 
     # Navbar 應顯示該使用者的 email
-    it { is_expected.to have_content "taskowner@example.com" }
+    it { is_expected.to have_content target_user.email }
 
     # 應顯示該使用者的任務
-    it { is_expected.to have_content "Owner Task 1" }
-    it { is_expected.to have_content "Owner Task 2" }
+    it { is_expected.to have_content task1.title }
+    it { is_expected.to have_content task2.title }
 
     # 不應顯示其他使用者的任務
-    it { is_expected.not_to have_content "Other Task" }
+    it { is_expected.not_to have_content other_task.title }
   end
 
   # --- 測試情境：排序功能 ---
@@ -174,6 +174,51 @@ RSpec.describe "Admin::Users", type: :feature do
 
       # 升序：任務少的在前
       it { is_expected.to have_content(/New User.*Old User/m) }
+    end
+  end
+
+  # 權限控制
+  describe "權限控制" do
+    context "當一般使用者嘗試存取管理頁面" do
+      let(:normal_user) { create(:user, admin: false) }
+
+      before do
+        sign_out
+        sign_in(normal_user)
+        visit admin_users_path
+      end
+
+
+      it { is_expected.to have_current_path root_path }
+    end
+
+    context "當管理員存取管理頁面" do
+      # admin 已在最上方定義，且 before 中已登入
+      before { visit admin_users_path }
+
+      it { is_expected.to have_current_path admin_users_path }
+    end
+  end
+
+  describe "刪除最後一位管理員", js: true do
+    # 確保 admin 是唯一的管理員
+    before do
+      # 清除其他可能存在的管理員，只保留 admin
+      User.where(admin: true).where.not(id: admin.id).destroy_all
+      visit admin_users_path
+    end
+
+    context "當嘗試刪除最後一位管理員" do
+      before do
+        within find('tr', text: admin.name) do
+          accept_confirm do
+            find("a[data-turbo-method='delete']").click
+          end
+        end
+      end
+
+      it { is_expected.to have_content I18n.t("activerecord.errors.models.user.attributes.base.last_admin") }
+      it { is_expected.to have_content admin.name }
     end
   end
 end
