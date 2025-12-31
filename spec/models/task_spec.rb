@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Task, type: :model do
-  describe '關聯性測試' do
+  describe '關聯' do
     context '當建立有使用者的任務' do
       let(:task) { create(:task) }
 

@@ -6,7 +6,7 @@ RSpec.describe "Admin::Tasks", type: :feature do
   subject { page }
 
   # 建立測試使用者（管理員）
-  let(:admin) { create(:user, name: "Admin", email: "admin@example.com") }
+  let(:admin) { create(:user, :admin, name: "Admin", email: "admin@example.com") }
 
   # 建立被查看任務的使用者
   let(:target_user) { create(:user, name: "Target User", email: "target@example.com") }

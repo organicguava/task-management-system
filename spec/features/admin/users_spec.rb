@@ -6,7 +6,7 @@ RSpec.describe "Admin::Users", type: :feature do
   subject { page }
 
   # 建立測試使用者（管理員）
-  let(:admin) { create(:user, name: "Admin", email: "admin@example.com") }
+  let(:admin) { create(:user, :admin, name: "Admin", email: "admin@example.com") }
 
   # 全域設定：所有測試開始前，先登入
   before { sign_in(admin) }
@@ -174,6 +174,51 @@ RSpec.describe "Admin::Users", type: :feature do
 
       # 升序：任務少的在前
       it { is_expected.to have_content(/New User.*Old User/m) }
+    end
+  end
+
+  # 權限控制
+  describe "權限控制" do
+    context "當一般使用者嘗試存取管理頁面" do
+      let(:normal_user) { create(:user, admin: false) }
+
+      before do
+        sign_out
+        sign_in(normal_user)
+        visit admin_users_path
+      end
+
+
+      it { is_expected.to have_current_path root_path }
+    end
+
+    context "當管理員存取管理頁面" do
+      # admin 已在最上方定義，且 before 中已登入
+      before { visit admin_users_path }
+
+      it { is_expected.to have_current_path admin_users_path }
+    end
+  end
+
+  describe "刪除最後一位管理員", js: true do
+    # 確保 admin 是唯一的管理員
+    before do
+      # 清除其他可能存在的管理員，只保留 admin
+      User.where(admin: true).where.not(id: admin.id).destroy_all
+      visit admin_users_path
+    end
+
+    context "當嘗試刪除最後一位管理員" do
+      before do
+        within find('tr', text: admin.name) do
+          accept_confirm do
+            find("a[data-turbo-method='delete']").click
+          end
+        end
+      end
+
+      it { is_expected.to have_content I18n.t("activerecord.errors.models.user.attributes.base.last_admin") }
+      it { is_expected.to have_content admin.name }
     end
   end
 end

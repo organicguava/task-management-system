@@ -12,7 +12,8 @@ admin = User.create!(
   name: "Admin",
   email: "admin@example.com",
   password: "123456",             # has_secure_password 會自動加密
-  password_confirmation: "123456"
+  password_confirmation: "123456",
+  admin: true
 )
 
 # 3. 建立任務

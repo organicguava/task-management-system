@@ -42,11 +42,13 @@ class Admin::UsersController < Admin::BaseController
     end
   end
 
-  def destroy
-    # 如果找不到 id，Rails 會自動跳 404，這行以下都不會執行
-    @user.destroy
-    redirect_to admin_users_path, status: :see_other, notice: t("flash.common.destroy.notice")
-    # 必須回傳 HTTP 303 (See Other) 狀態碼，否則 Turbo 有時候會報錯。
+  def destroy # 如果找不到 id，Rails 會自動跳 404，不會執行destroy
+    # 若處理刪除失敗，顯示錯誤訊息
+    if @user.destroy
+      redirect_to admin_users_path, status: :see_other, notice: t("flash.common.destroy.notice") # 必須回傳 HTTP 303 (See Other) 狀態碼，否則 Turbo 有時候會報錯。
+    else
+      redirect_to admin_users_path, status: :see_other, alert: @user.errors.full_messages.to_sentence
+    end
   end
 
   private # 為了安全性，必須使用 Strong Parameters
@@ -57,7 +59,7 @@ class Admin::UsersController < Admin::BaseController
   end
 
   def user_params
-    params.require(:user).permit(:name, :email, :password, :password_confirmation)
+    params.require(:user).permit(:name, :email, :password, :password_confirmation, :admin)
   end
 
   # 使用 delete_if 刪除空的密碼欄位，密碼若在編輯時沒有更新就不會被改變
