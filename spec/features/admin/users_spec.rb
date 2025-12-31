@@ -13,15 +13,15 @@ RSpec.describe "Admin::Users", type: :feature do
 
   # --- 測試情境：使用者列表 ---
   describe "使用者列表" do
-    let!(:user1) { create(:user, name: "User One", email: "one@example.com") }
-    let!(:user2) { create(:user, name: "User Two", email: "two@example.com") }
+    let!(:user1) { create(:user) }
+    let!(:user2) { create(:user) }
 
     before { visit admin_users_path }
 
-    it { is_expected.to have_content "User One" }
-    it { is_expected.to have_content "User Two" }
-    it { is_expected.to have_content "one@example.com" }
-    it { is_expected.to have_content "two@example.com" }
+    it { is_expected.to have_content user1.name }
+    it { is_expected.to have_content user2.name }
+    it { is_expected.to have_content user1.email }
+    it { is_expected.to have_content user2.email }
 
     context "顯示任務數量" do
       let!(:task1) { create(:task, user: user1) }
@@ -100,11 +100,11 @@ RSpec.describe "Admin::Users", type: :feature do
 
   # --- 測試情境：刪除使用者 ---
   describe "刪除使用者", js: true do
-    let!(:target_user) { create(:user, name: "To Be Deleted") }
+    let!(:target_user) { create(:user) }
 
     before { visit admin_users_path }
 
-    it { is_expected.to have_content "To Be Deleted" }
+    it { is_expected.to have_content target_user.name }
 
     context "點擊刪除按鈕後" do
       before do
@@ -116,16 +116,16 @@ RSpec.describe "Admin::Users", type: :feature do
       end
 
       it { is_expected.to have_content I18n.t("flash.common.destroy.notice") }
-      it { is_expected.not_to have_content "To Be Deleted" }
+      it { is_expected.not_to have_content target_user.name }
     end
   end
 
   # --- 測試情境：查看使用者的任務列表 ---
   describe "查看使用者的任務列表" do
-    let!(:target_user) { create(:user, name: "Task Owner", email: "taskowner@example.com") }
-    let!(:task1) { create(:task, title: "Owner Task 1", user: target_user) }
-    let!(:task2) { create(:task, title: "Owner Task 2", user: target_user) }
-    let!(:other_task) { create(:task, title: "Other Task", user: admin) }
+    let!(:target_user) { create(:user) }
+    let!(:task1) { create(:task, user: target_user) }
+    let!(:task2) { create(:task, user: target_user) }
+    let!(:other_task) { create(:task, user: admin) }
 
     before do
       visit admin_users_path
@@ -139,14 +139,14 @@ RSpec.describe "Admin::Users", type: :feature do
     it { is_expected.to have_current_path admin_user_tasks_path(target_user) }
 
     # Navbar 應顯示該使用者的 email
-    it { is_expected.to have_content "taskowner@example.com" }
+    it { is_expected.to have_content target_user.email }
 
     # 應顯示該使用者的任務
-    it { is_expected.to have_content "Owner Task 1" }
-    it { is_expected.to have_content "Owner Task 2" }
+    it { is_expected.to have_content task1.title }
+    it { is_expected.to have_content task2.title }
 
     # 不應顯示其他使用者的任務
-    it { is_expected.not_to have_content "Other Task" }
+    it { is_expected.not_to have_content other_task.title }
   end
 
   # --- 測試情境：排序功能 ---

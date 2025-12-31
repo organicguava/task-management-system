@@ -37,8 +37,7 @@ RSpec.describe User, type: :model do
 
     it "刪除使用者時連帶刪除任務" do
       user_to_delete = create(:user)
-      create(:task, user: user_to_delete)
-      create(:task, user: user_to_delete)
+      create_list(:task, 2, user: user_to_delete)
 
       expect {
         user_to_delete.destroy

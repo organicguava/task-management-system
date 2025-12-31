@@ -51,12 +51,12 @@ RSpec.describe "Tasks", type: :feature do
   # --- 測試情境：刪除任務 ---
   # 加入 js: true 以支援 Turbo 的 confirm dialog 與 delete method
   describe "刪除任務", js: true do
-    let!(:task) { create(:task, title: '要被刪掉的任務', user: user) }
+    let!(:task) { create(:task, user: user) }
 
     context "當任務存在時" do
       before { visit tasks_path }
 
-      it { is_expected.to have_content '要被刪掉的任務' }
+      it { is_expected.to have_content task.title }
 
       context "點擊刪除按鈕後" do
         before do
@@ -68,7 +68,7 @@ RSpec.describe "Tasks", type: :feature do
         end
 
         it { is_expected.to have_content I18n.t('flash.common.destroy.notice') }
-        it { is_expected.not_to have_content '要被刪掉的任務' }
+        it { is_expected.not_to have_content task.title }
       end
     end
   end
