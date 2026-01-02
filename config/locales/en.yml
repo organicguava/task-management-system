@@ -34,6 +34,7 @@ en:
     models:
       task: "Task"
       user: "User"
+      tag: "Tag"
     attributes:
       task:
         title: "Title"
@@ -42,11 +43,14 @@ en:
         created_at: "Created At"
         status: "Status"
         priority: "Priority"
+        tags: "Tags"
       user:
         name: "Name"
         email: "Email"
         password: "Password"
         password_confirmation: "Password Confirmation"
+      tag:
+        name: "Name"
     enums:
       task:
         status:

@@ -5,6 +5,7 @@ zh-TW:
     models:
       task: "任務"
       user: "使用者"
+      tag: "標籤"
     attributes:
       task:
         title: "標題"
@@ -13,6 +14,7 @@ zh-TW:
         created_at: "建立時間"
         status: "狀態"
         priority: "優先級"
+        tags: "標籤"
       user:
         admin: "管理員"
         name: "名稱"
@@ -20,6 +22,8 @@ zh-TW:
         password: "密碼"
         password_confirmation: "確認密碼"
         created_at: "建立時間"
+      tag:
+        name: "名稱"
     enums: 
       task:
         status:
@@ -37,6 +41,10 @@ zh-TW:
             base:
               last_admin: "無法刪除最後一位管理員"
               last_admin_demotion: "無法將最後一位管理員降級為一般使用者"
+              task_tag:
+                attributes:
+                  tag_id:
+                    already_added: "已經加入此任務"
   
   # 2. 針對 View 或 Controller 的自訂翻譯
   sessions:
@@ -92,6 +100,8 @@ zh-TW:
       sorting: "排序"
       filter: "篩選"
       search: "搜尋"
+      filter_by_tag: "標籤篩選"
+      all_tags: "全部標籤"
     new:
       title: "新增任務"
       submit: "提交"

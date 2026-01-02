@@ -12,12 +12,13 @@ class TasksController < ApplicationController
                   .controller_index_query(params[:sort_by], params[:direction])
 =end
   def index
-    # 加入 .includes(:user), 避免 N+1 查詢問題
+    # 加入 .includes(:user, :tags), 避免 N+1 查詢問題
     # 使用 reverse_merge 設定預設排序為「建立時間倒序」，避免每次都要在 view 傳參數
-    @q = current_user.tasks.includes(:user).ransack(params.fetch(:q, {}).reverse_merge(s: "created_at desc"))
+    @q = current_user.tasks.includes(:user, :tags).ransack(params.fetch(:q, {}).reverse_merge(s: "created_at desc"))
     # 取得初步結果，distinct: true 可以避免關聯查詢時出現重複資料
     # 先查詢結果 -> 再分頁
     @pagy, @tasks = pagy(@q.result(distinct: true), limit: 10, overflow: :last_page)
+  end
   end
 
   def new
@@ -70,6 +71,7 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:title, :content, :end_time, :status, :priority)
+    # tag_ids: [] 允許接收標籤 ID 陣列，用於多對多關聯
+    params.require(:task).permit(:title, :content, :end_time, :status, :priority, tag_ids: [])
   end
 end
