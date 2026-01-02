@@ -44,4 +44,10 @@ module TasksHelper
       content_tag :span, t("activerecord.enums.task.priority.#{priority}"),
                   class: "px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full #{priority_class}"
     end
+
+    # 產生單一標籤 Badge（標籤名稱是動態資料，直接顯示）
+    def tag_badge(tag)
+      content_tag :span, tag.name,
+                  class: "px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+    end
 end

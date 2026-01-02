@@ -1,6 +1,13 @@
 class Task < ApplicationRecord
   # 任務屬於某個使用者，並啟用 counter_cache 自動更新 users.tasks_count
   belongs_to :user, counter_cache: true
+
+  # 透過中間表與 Tag 建立多對多關聯
+  has_many :task_tags, dependent: :destroy # 刪除任務時，連帶刪除其task_tags，避免產生孤兒資料
+
+  has_many :tags, through: :task_tags
+
+  # === 驗證 ===
   # 驗證標題必填
   validates :title, presence: true
   validates :status, presence: true
@@ -20,7 +27,7 @@ class Task < ApplicationRecord
 
   # 定義 Ransack 可以搜尋的關聯 (如果之後有 User 或 Tag 的話)
   def self.ransackable_associations(auth_object = nil)
-    []
+    %w[tags]
   end
 
   # 搜尋邏輯放在model scope 而非controller , 維持fat controller thin model 原則

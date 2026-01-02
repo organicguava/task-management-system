@@ -23,6 +23,11 @@ RSpec.describe Task, type: :model do
         expect(task.errors[:user]).not_to be_empty
       end
     end
+
+    context '標籤關聯' do
+      it { is_expected.to have_many(:task_tags).dependent(:destroy) }
+      it { is_expected.to have_many(:tags).through(:task_tags) }
+    end
   end
 
   describe '驗證' do
@@ -48,6 +53,30 @@ RSpec.describe Task, type: :model do
     it "可以依狀態搜尋" do
       expect(Task.search_by_status("pending")).to include(task1)
       expect(Task.search_by_status("pending")).not_to include(task2)
+    end
+  end
+
+  describe '標籤功能' do
+    let(:task) { create(:task) }
+    let(:tag1) { create(:tag, name: '工作') }
+    let(:tag2) { create(:tag, name: '緊急') }
+
+    it '可以加入多個標籤' do
+      task.tags << tag1
+      task.tags << tag2
+      expect(task.tags.count).to eq(2)
+      expect(task.tags).to include(tag1, tag2)
+    end
+
+    it '可以透過 tag_ids 批次設定標籤' do
+      task.tag_ids = [ tag1.id, tag2.id ]
+      expect(task.tags).to include(tag1, tag2)
+    end
+
+    it '刪除任務時會刪除關聯但不刪除標籤' do
+      task.tags << tag1
+      expect { task.destroy }.to change(TaskTag, :count).by(-1)
+      expect(Tag.exists?(tag1.id)).to be true
     end
   end
 end

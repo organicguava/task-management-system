@@ -52,6 +52,19 @@
               </div>
           </div>
 
+          <%# tags filter 篩選邏輯 %>
+          <div class="relative">
+            <%= f.select :tags_id_eq, 
+              Tag.all.map { |tag| [tag.name, tag.id] }, 
+              { include_blank: Task.human_attribute_name(:tags) }, 
+              class: "appearance-none block w-full pl-4 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-full bg-white text-gray-700 cursor-pointer hover:bg-gray-50 transition",
+              data: { action: "change->autosubmit#search" } %>
+              
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                <%= inline_svg_icon("icons/chevron-down.svg", class: "h-4 w-4") %>
+              </div>
+          </div>
+
           <%= f.submit "Filter", class: "hidden" %> <%# 因為移除了原本UI中的搜尋與重置按鈕，改成隱藏的提交按鈕，由autosubmit controller觸發時執行原本觸發按鈕的行為 %>
         </div>
 
@@ -105,6 +118,9 @@
               <th class="px-5 py-3">
                 <%= sort_link @q, :priority, Task.human_attribute_name(:priority), class: "hover:text-gray-900 flex items-center" %>
               </th>
+              <th class="px-5 py-3">
+                <%= Task.human_attribute_name(:tags) %>
+              </th>
               <th class="px-5 py-3 cursor-pointer">
                 <%= sort_link @q, :end_time, Task.human_attribute_name(:end_time), class: "hover:text-gray-900 flex items-center" %>
               </th>
@@ -138,13 +154,23 @@
                   <%= priority_badge(task.priority) %>
                 </td>
 
-                <%# 5. 結束時間 %>
+
+                <%# 5. tags (彩色標籤 Badge) %>
+                <td class="px-5 py-4">
+                  <div class="flex flex-wrap gap-1">
+                    <% task.tags.each do |tag| %>
+                      <%= tag_badge(tag) %>
+                    <% end %>
+                  </div>
+                </td>
+
+                <%# 6. 結束時間 %>
                 <td class="px-5 py-4 text-gray-500">
                   <%# 使用 l (localize) 方法格式化時間，如果時間是 nil 則不顯示 %>
                   <%= l(task.end_time, format: :short) if task.end_time.present? %>
                 </td>
 
-                <%# 6. 操作按鈕  %>
+                <%# 7. 操作按鈕  %>
                 <td class="px-5 py-4 text-right">
                   <div class="flex items-center justify-end space-x-3">
                     <%# 編輯按鈕 Icon %>
