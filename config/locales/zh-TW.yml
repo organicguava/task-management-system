@@ -1,5 +1,5 @@
 zh-TW:
-  # 1. 針對 Model 與欄位的翻譯 (ActiveRecord)
+  # 針對 Model 與欄位的翻譯 (ActiveRecord)
   # 這樣寫的好處是：使用 f.label :title 時，Rails 會自動抓這裡的翻譯，不用在 view 裡寫中文
   activerecord:
     models:
@@ -46,7 +46,7 @@ zh-TW:
             tag_id:
               already_added: "已經加入此任務"
   
-  # 2. 針對 View 或 Controller 的自訂翻譯
+  # 針對 View 或 Controller 的自訂翻譯
   sessions:
     new:
       title: "登入系統"
@@ -120,7 +120,7 @@ zh-TW:
       search_by_status: "狀態"
       reset: "重置"
       
-  # 3. Flash 訊息 (Controller 用)
+  # Flash 訊息 (Controller 用)
   flash:
     tasks:
       create:
@@ -151,9 +151,21 @@ zh-TW:
       destroy:
         notice: "刪除成功"
 
+  # 自訂錯誤頁面
+  errors:
+    page_title: 發生錯誤
+    "404": # 數字要用“” 包起來，不然yml 會讀不進去
+      title: 找不到頁面
+      description: 您要找的頁面不存在或已被移除。
+    "500":
+      title: 伺服器錯誤
+      description: 系統發生錯誤，請稍後再試。
+    "422":
+      title: 無法處理請求
+      description: 您的請求無法被處理，可能是因為資料驗證失敗。
+    back_to_home: 返回首頁
 
-        
-  # 4. 共用動作 (如果很多地方都用得到)
+  # 共用動作 (如果很多地方都用得到)
   action:
     edit: "修改"
     delete: "刪除"
@@ -162,13 +174,13 @@ zh-TW:
     confirm_delete: "確定要刪除任務「%{title}」嗎？"
     view_tasks: "查看任務"
 
-  # 5. 共用詞彙
+  # 共用詞彙
   common:
     all: "全部狀態"
     search: "搜尋"
     actions: "操作"
 
-  # 6. 導航列
+  # 導航列
   navbar:
     logout: "登出"
     admin_users: "使用者列表"

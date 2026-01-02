@@ -27,4 +27,9 @@ Rails.application.routes.draw do
   get "/login", to: "sessions#new"
   post "/login", to: "sessions#create"
   delete "/logout", to: "sessions#destroy"
+
+  # 設定自訂的error pages路由
+  %w[404 422 500].each do |code|
+    get code, to: "errors#show", code: code
+  end
 end
