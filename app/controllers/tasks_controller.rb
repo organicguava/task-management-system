@@ -19,7 +19,6 @@ class TasksController < ApplicationController
     # 先查詢結果 -> 再分頁
     @pagy, @tasks = pagy(@q.result(distinct: true), limit: 10, overflow: :last_page)
   end
-  end
 
   def new
     @task = Task.new

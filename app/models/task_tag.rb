@@ -6,5 +6,5 @@ class TaskTag < ApplicationRecord
 
   # === 驗證 ===
   # 確保同一任務不會重複加入相同標籤（搭配資料庫唯一索引的雙重保護）
-  validates :tag_id, uniqueness: { scope: :task_id, message: :already_added}
+  validates :tag_id, uniqueness: { scope: :task_id, message: :already_added }
 end

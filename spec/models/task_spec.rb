@@ -69,7 +69,7 @@ RSpec.describe Task, type: :model do
     end
 
     it '可以透過 tag_ids 批次設定標籤' do
-      task.tag_ids = [tag1.id, tag2.id]
+      task.tag_ids = [ tag1.id, tag2.id ]
       expect(task.tags).to include(tag1, tag2)
     end
 
